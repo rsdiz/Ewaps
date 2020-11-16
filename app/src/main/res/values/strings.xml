@@ -4,4 +4,10 @@
     <string name="inputTopic">Lapor Masalah !</string>
 
     <string name="hintInfo">Keterangan</string>
+
+    <string name="cameraBtn">Ambil gambar</string>
+
+    <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyABeSoek01kJF8OOStLhflc-Bkvbmh8_Vs
+    </string>
 </resources>

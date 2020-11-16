@@ -26,7 +26,9 @@
 
     </LinearLayout>
 
+
     <EditText
+        android:id="@+id/info_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/topBar"
@@ -42,6 +44,32 @@
         android:textColor="@color/blueText"
         android:fontFamily="@font/roboto"
         android:inputType="text"/>
+
+    <Button
+        android:id="@+id/camera_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/info_id"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/custom_button"
+        android:layout_marginTop="20dp"
+        android:text="@string/cameraBtn"
+        android:textColor="@color/white"
+        android:fontFamily="@font/roboto"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:paddingVertical="15dp"
+        />
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        tools:context="com.example.mapwithmarker.MapsMarkerActivity"
+        android:layout_below="@id/camera_btn"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"/>
 
 
 </RelativeLayout>
