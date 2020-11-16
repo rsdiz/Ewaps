@@ -6,6 +6,7 @@
     <string name="hintInfo">Keterangan</string>
 
     <string name="cameraBtn">Ambil gambar</string>
+    <string name="submitBtn">Lapor !</string>
 
     <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">
         AIzaSyABeSoek01kJF8OOStLhflc-Bkvbmh8_Vs

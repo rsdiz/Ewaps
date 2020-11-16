@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/info_id"
         android:layout_marginHorizontal="20dp"
-        android:background="@drawable/custom_button"
+        android:background="@drawable/custom_button_2"
         android:layout_marginTop="20dp"
         android:text="@string/cameraBtn"
         android:textColor="@color/white"
@@ -69,7 +69,24 @@
         tools:context="com.example.mapwithmarker.MapsMarkerActivity"
         android:layout_below="@id/camera_btn"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        />
+
+    <Button
+        android:id="@+id/submit_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/custom_button"
+        android:layout_marginTop="40dp"
+        android:text="@string/submitBtn"
+        android:textColor="@color/white"
+        android:fontFamily="@font/roboto"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:paddingVertical="15dp"
+        />
 
 
 </RelativeLayout>
