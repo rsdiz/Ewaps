@@ -6,10 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".ui.SplashScreenActivity">
 
-    <TextView
-        android:id="@+id/tes1"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/ewapsAnimation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="test"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="ewaps_animation_2.json"
+        />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/paperPlaneAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_fileName="paper_airplane.json"
+        android:layout_below="@id/ewapsAnimation"
+        />
 
 </RelativeLayout>

@@ -6,25 +6,38 @@
     tools:context=".ui.UserInputActivity"
     android:background="@color/blue">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="@color/purple"
         android:paddingVertical="20dp"
         android:paddingHorizontal="20dp"
         >
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/topic"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:text="@string/inputTopic"
             android:textSize="22sp"
-            android:fontFamily="@font/roboto"/>
+            android:fontFamily="@font/roboto"
+            android:layout_centerVertical="true"
+            />
 
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/emergencyBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_call"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            android:layout_alignParentEnd="true"
+            android:background="@color/purple"
+            android:layout_marginStart="120dp"/>
+
+    </RelativeLayout>
 
 
     <EditText
@@ -61,6 +74,12 @@
         android:paddingVertical="15dp"
         />
 
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        -->
+<!--    </LinearLayout>-->
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -88,5 +107,15 @@
         android:paddingVertical="15dp"
         />
 
+    <include
+        android:id="@+id/tablayout"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
+        layout="@layout/tablayout"
+        android:layout_centerHorizontal="true"
+        />
 
 </RelativeLayout>

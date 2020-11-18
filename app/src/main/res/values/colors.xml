@@ -10,4 +10,5 @@
     <color name="blueText">#828BAA</color>
     <color name="borderGray">#DDDDDD</color>
     <color name="whiteGreen">#18D2BA</color>
+    <color name="gray">#DEDEDE</color>
 </resources>
