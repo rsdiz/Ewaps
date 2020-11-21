@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "34181104207",
+    "firebase_url": "https://ewaps-295806.firebaseio.com",
+    "project_id": "ewaps-295806",
+    "storage_bucket": "ewaps-295806.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34181104207:android:3a3ec195037b6b99cde03a",
+        "android_client_info": {
+          "package_name": "id.gasken.ewaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34181104207-ddd5dtt99dlmed94211tfvaf9k4dplho.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoWxF4SjnQSboGXaX-1AF7KKmvyp9oGtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34181104207-ddd5dtt99dlmed94211tfvaf9k4dplho.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

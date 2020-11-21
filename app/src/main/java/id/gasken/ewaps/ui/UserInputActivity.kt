@@ -16,15 +16,22 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
+import com.google.firebase.firestore.FirebaseFirestore
 import id.gasken.ewaps.R
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
 import java.io.IOException
+import java.util.*
+import kotlin.collections.HashMap
 
 class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
 
     private lateinit var binding: ActivityUserInputBinding
 
     private lateinit var mMap: GoogleMap
+
+    private val db = FirebaseFirestore.getInstance()
+
+    private val report_data: MutableMap<String, Any> = HashMap<String, Any>()
 
 //    private val pic_id = 123
 
@@ -48,6 +55,30 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
             startActivityForResult(Intent.createChooser(mediaIntent, "Select Picture"), 1)
         }
 
+        binding.submitBtn.setOnClickListener {
+            if (binding.infoId.text.toString() == ""){
+                Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
+            }else{
+                startFirestore()
+            }
+
+        }
+
+
+    }
+
+    private fun startFirestore(){
+
+        report_data.put("aku", "kamu")
+        report_data.put("aku", 12)
+        db.collection("users")
+                .add(report_data)
+                .addOnSuccessListener {
+                    println("success")
+                }
+                .addOnFailureListener {
+                    println("gagal")
+                }
     }
 
     override fun onMarkerDragStart(p0: Marker?) {
