@@ -11,4 +11,6 @@
     <color name="borderGray">#DDDDDD</color>
     <color name="whiteGreen">#18D2BA</color>
     <color name="gray">#DEDEDE</color>
+
+    <color name="black_semitransparent_light">#4D000000</color>
 </resources>

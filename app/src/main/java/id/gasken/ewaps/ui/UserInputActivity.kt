@@ -2,33 +2,27 @@ package id.gasken.ewaps.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.Display
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.widget.ScrollView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import id.gasken.ewaps.R
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
+import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.*
-import kotlin.collections.HashMap
 
 class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
 
@@ -64,15 +58,14 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         }
 
         binding.submitBtn.setOnClickListener {
-            if (binding.infoId.text.toString() == ""){
+            if (binding.infoId.text.toString() == "") {
                 Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
+
             }else{
                 addReportData()
+
             }
-
         }
-
-
     }
 
     private fun addReportData(){
@@ -87,11 +80,11 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 .addOnFailureListener {
                     println("gagal")
                 }
+
     }
 
 
-
-    private fun checkTabLayout(){
+    private fun checkTabLayout() {
         val homeBtn = binding.tablayout.homeBtn
         homeBtn.setColorFilter(ContextCompat.getColor(this, R.color.gray))
 
@@ -104,8 +97,6 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 //        if (TabLayout.userInputState){
 //
 //        }
-
-
     }
 
 
@@ -141,24 +132,21 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         mMap.setOnMarkerDragListener(this)
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-
-
-        when(requestCode){
+        when (requestCode) {
             0 -> {
-                if (resultCode == Activity.RESULT_OK){
-
-                }else if (resultCode == Activity.RESULT_CANCELED)  {
-                    Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show();
+                if (resultCode == Activity.RESULT_OK) {
+                    // OK Result
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
                 }
             }
 
             1 -> {
-                if (resultCode == Activity.RESULT_OK){
-                    if(data != null){
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
                         try {
 
                             filePath = data.data!!
@@ -168,17 +156,17 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                             binding.imageView.setImageBitmap(bitmap)
 
                         }catch (e: IOException){
-                            Toast.makeText(this, "Error Occured", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Error Occured", Toast.LENGTH_SHORT).show()
+
+                        }catch (e: FileNotFoundException) {
+                            Toast.makeText(this, "File Not Found", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }else if (resultCode == Activity.RESULT_CANCELED)  {
-                    Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show();
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-
-
 }
-
 

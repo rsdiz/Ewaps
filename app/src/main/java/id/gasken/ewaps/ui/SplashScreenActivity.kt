@@ -1,12 +1,12 @@
 package id.gasken.ewaps.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import id.gasken.ewaps.databinding.ActivitySplashScreenBinding
+import id.gasken.ewaps.tool.hideSystemUI
 
 class SplashScreenActivity : AppCompatActivity() {
 
@@ -17,21 +17,17 @@ class SplashScreenActivity : AppCompatActivity() {
         binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        Handler(Looper.getMainLooper()).postDelayed({
-
-            startActivity(Intent(this, UserInputActivity::class.java))
-            finish()
-
-        }, 1900)
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                startActivity(Intent(this, UserInputActivity::class.java))
+                finish()
+            },
+            1900
+        )
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus){
-            window.decorView.systemUiVisibility = (
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    )
-        }
+        if (hasFocus) hideSystemUI()
     }
 }
