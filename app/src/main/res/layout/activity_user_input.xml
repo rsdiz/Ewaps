@@ -39,73 +39,99 @@
 
     </RelativeLayout>
 
-
-    <EditText
-        android:id="@+id/info_id"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/topBar"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="40dp"
-        android:hint="@string/hintInfo"
-        android:autofillHints="@string/hintInfo"
-        android:drawablePadding="15dp"
-        android:paddingHorizontal="15dp"
-        android:paddingVertical="15dp"
-        android:drawableStart="@drawable/ic_info"
-        android:background="@drawable/custom_input"
-        android:textColor="@color/blueText"
-        android:fontFamily="@font/roboto"
-        android:inputType="text"/>
+        android:layout_below="@id/topBar">
 
-    <Button
-        android:id="@+id/camera_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/info_id"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/custom_button_2"
-        android:layout_marginTop="20dp"
-        android:text="@string/cameraBtn"
-        android:textColor="@color/white"
-        android:fontFamily="@font/roboto"
-        android:textAllCaps="false"
-        android:textSize="18sp"
-        android:paddingVertical="15dp"
-        />
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content">-->
-<!--        -->
-<!--    </LinearLayout>-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        tools:context="com.example.mapwithmarker.MapsMarkerActivity"
-        android:layout_below="@id/camera_btn"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        />
 
-    <Button
-        android:id="@+id/submit_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/map"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/custom_button"
-        android:layout_marginTop="40dp"
-        android:text="@string/submitBtn"
-        android:textColor="@color/white"
-        android:fontFamily="@font/roboto"
-        android:textAllCaps="false"
-        android:textSize="18sp"
-        android:paddingVertical="15dp"
-        />
+            <EditText
+                android:id="@+id/info_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="40dp"
+                android:hint="@string/hintInfo"
+                android:autofillHints="@string/hintInfo"
+                android:drawablePadding="15dp"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="15dp"
+                android:drawableStart="@drawable/ic_info"
+                android:background="@drawable/custom_input"
+                android:textColor="@color/blueText"
+                android:fontFamily="@font/roboto"
+                android:inputType="text"/>
+
+            <Button
+                android:id="@+id/camera_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/info_id"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/custom_button_2"
+                android:layout_marginTop="20dp"
+                android:text="@string/cameraBtn"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:paddingVertical="15dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/image_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/camera_btn"
+                android:orientation="vertical"
+                android:layout_marginHorizontal="20dp">
+
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                tools:context="com.example.mapwithmarker.MapsMarkerActivity"
+                android:layout_below="@id/image_container"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                />
+
+            <Button
+                android:id="@+id/submit_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/map"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/custom_button"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="80dp"
+                android:text="@string/submitBtn"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:paddingVertical="15dp"
+                />
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
 
     <include
         android:id="@+id/tablayout"

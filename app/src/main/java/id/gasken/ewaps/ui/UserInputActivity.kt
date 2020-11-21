@@ -2,10 +2,16 @@ package id.gasken.ewaps.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Display
+import android.view.KeyEvent
+import android.view.MotionEvent
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.GoogleMap
@@ -17,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import id.gasken.ewaps.R
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
 import java.io.IOException
@@ -29,11 +36,13 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
     private lateinit var mMap: GoogleMap
 
-    private val db = FirebaseFirestore.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
+
+    private val mStorageRef = FirebaseStorage.getInstance().getReference()
 
     private val report_data: MutableMap<String, Any> = HashMap<String, Any>()
 
-//    private val pic_id = 123
+    private lateinit var filePath: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,12 +55,11 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
         mapFragment.getMapAsync(this)
 
-
         binding.cameraBtn.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            startActivityForResult(cameraIntent, 0)
+//            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//            startActivityForResult(cameraIntent, 0)
 
-            val mediaIntent = Intent(Intent.ACTION_GET_CONTENT)
+            val mediaIntent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
             startActivityForResult(Intent.createChooser(mediaIntent, "Select Picture"), 1)
         }
 
@@ -59,7 +67,7 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
             if (binding.infoId.text.toString() == ""){
                 Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
             }else{
-                startFirestore()
+                addReportData()
             }
 
         }
@@ -67,11 +75,11 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
     }
 
-    private fun startFirestore(){
+    private fun addReportData(){
 
-        report_data.put("aku", "kamu")
-        report_data.put("aku", 12)
-        db.collection("users")
+
+
+        firestore.collection("report")
                 .add(report_data)
                 .addOnSuccessListener {
                     println("success")
@@ -81,19 +89,7 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 }
     }
 
-    override fun onMarkerDragStart(p0: Marker?) {
-//        TODO("Not yet implemented")
-    }
 
-    override fun onMarkerDrag(p0: Marker?) {
-//        TODO("Not yet implemented")
-    }
-
-    override fun onMarkerDragEnd(marker: Marker?) {
-        if (marker != null){
-            println(marker.position)
-        }
-    }
 
     private fun checkTabLayout(){
         val homeBtn = binding.tablayout.homeBtn
@@ -112,6 +108,22 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
     }
 
+
+
+    override fun onMarkerDragStart(p0: Marker?) {
+//        TODO("Not yet implemented")
+    }
+
+    override fun onMarkerDrag(p0: Marker?) {
+//        TODO("Not yet implemented")
+    }
+
+    override fun onMarkerDragEnd(marker: Marker?) {
+        if (marker != null){
+            println(marker.position)
+            report_data.put("location", marker.position)
+        }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -148,7 +160,13 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 if (resultCode == Activity.RESULT_OK){
                     if(data != null){
                         try {
-                            val bitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data.data)
+
+                            filePath = data.data!!
+
+                            val bitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, filePath)
+
+                            binding.imageView.setImageBitmap(bitmap)
+
                         }catch (e: IOException){
                             Toast.makeText(this, "Error Occured", Toast.LENGTH_SHORT).show();
                         }
@@ -162,4 +180,5 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
 
 }
+
 
