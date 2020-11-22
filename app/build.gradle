@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'com.google.gms.google-services'
 
 
@@ -50,6 +51,9 @@ dependencies {
 
     // Google MAPS
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.1.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:2.2.0'
     // ViewBinding
     implementation 'com.android.databinding:viewbinding:4.1.1'
     // Lottie

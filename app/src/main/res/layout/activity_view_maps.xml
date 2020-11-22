@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.ViewMapsActivity">
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:background="@color/purple"
+        android:paddingHorizontal="20dp">
+
+        <TextView
+            android:id="@+id/topic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/roboto"
+            android:text="@string/titikRawanTopic"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+        <ImageButton
+            android:id="@+id/showSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_search_gray"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            android:layout_alignParentEnd="true"
+            android:background="@color/purple"
+            android:tag="show"
+            android:contentDescription="@string/cari_titik_rawan" />
+
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/mapview"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        tools:context=".ui.ViewMapsActivity" />
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/layoutSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/mapview"
+        android:layout_margin="18dp"
+        android:padding="6dp"
+        android:background="@drawable/custom_input"
+        android:elevation="12dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/inputSearchPoint"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:inputType="textAutoComplete"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:id="@+id/buttonSearchPoint"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/custom_button_2"
+            android:src="@drawable/ic_search_gray"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonNavigasi"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="14dp"
+        android:layout_marginBottom="32dp"
+        android:elevation="18dp"
+        android:background="@drawable/custom_bg_white_radius">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_navigation"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato_bold"
+            android:textSize="20sp"
+            android:textColor="@color/blueText"
+            android:text="Navigasi" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
