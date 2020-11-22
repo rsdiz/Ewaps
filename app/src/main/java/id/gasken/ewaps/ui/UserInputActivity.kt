@@ -21,27 +21,26 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import id.gasken.ewaps.R
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
+import id.gasken.ewaps.tool.viewBinding
 import java.io.FileNotFoundException
 import java.io.IOException
 
 class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
 
-    private lateinit var binding: ActivityUserInputBinding
+    private val binding: ActivityUserInputBinding by viewBinding()
 
     private lateinit var mMap: GoogleMap
 
     private val firestore = FirebaseFirestore.getInstance()
 
-    private val mStorageRef = FirebaseStorage.getInstance().getReference()
+    private val mStorageRef = FirebaseStorage.getInstance().reference
 
-    private val report_data: MutableMap<String, Any> = HashMap<String, Any>()
+    private val reportData: MutableMap<String, Any> = HashMap()
 
     private lateinit var filePath: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityUserInputBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         checkTabLayout()
 
@@ -60,29 +59,23 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         binding.submitBtn.setOnClickListener {
             if (binding.infoId.text.toString() == "") {
                 Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
-
-            }else{
+            } else {
                 addReportData()
-
             }
         }
     }
 
-    private fun addReportData(){
-
-
+    private fun addReportData() {
 
         firestore.collection("report")
-                .add(report_data)
-                .addOnSuccessListener {
-                    println("success")
-                }
-                .addOnFailureListener {
-                    println("gagal")
-                }
-
+            .add(reportData)
+            .addOnSuccessListener {
+                println("success")
+            }
+            .addOnFailureListener {
+                println("gagal")
+            }
     }
-
 
     private fun checkTabLayout() {
         val homeBtn = binding.tablayout.homeBtn
@@ -99,8 +92,6 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 //        }
     }
 
-
-
     override fun onMarkerDragStart(p0: Marker?) {
 //        TODO("Not yet implemented")
     }
@@ -110,9 +101,9 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
     }
 
     override fun onMarkerDragEnd(marker: Marker?) {
-        if (marker != null){
+        if (marker != null) {
             println(marker.position)
-            report_data.put("location", marker.position)
+            reportData["location"] = marker.position
         }
     }
 
@@ -148,17 +139,12 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         try {
-
                             filePath = data.data!!
-
-                            val bitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, filePath)
-
+                            val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, filePath)
                             binding.imageView.setImageBitmap(bitmap)
-
-                        }catch (e: IOException){
+                        } catch (e: IOException) {
                             Toast.makeText(this, "Error Occured", Toast.LENGTH_SHORT).show()
-
-                        }catch (e: FileNotFoundException) {
+                        } catch (e: FileNotFoundException) {
                             Toast.makeText(this, "File Not Found", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -169,4 +155,3 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         }
     }
 }
-

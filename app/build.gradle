@@ -24,9 +24,13 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
     buildFeatures {
         viewBinding true
-
     }
 }
 
@@ -50,5 +54,7 @@ dependencies {
     implementation 'com.android.databinding:viewbinding:4.1.1'
     // Lottie
     implementation "com.airbnb.android:lottie:3.5.0"
-
+    // LifeCycle
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
 }
