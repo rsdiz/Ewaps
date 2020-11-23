@@ -1,8 +1,11 @@
 package id.gasken.ewaps.ui
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,6 +31,21 @@ class ViewMapsActivity :
     private val db = FirebaseFirestore.getInstance()
     private val data: MutableList<Points> = mutableListOf()
     private lateinit var clusterManager: ClusterManager<PointItem>
+
+    private val animationSlideDownFromHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_down_from_hide)
+    private val animationSlideUpToHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_up_to_hide)
+    private val animationSlideDownToHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_down_to_hide)
+    private val animationSlideUpFromHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_up_from_hide)
+    private val animationFadeIn
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_in)
+    private val animationFadeOut
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_out)
+    private val delayAnimSlide: Long = 300
+    private val delayAnimFade: Long = 400
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +73,26 @@ class ViewMapsActivity :
                 it.tag = "hide"
                 binding.showSearch.setImageResource(R.drawable.ic_baseline_close_24)
                 binding.layoutSearch.visibility = View.VISIBLE
+                binding.layoutSearch.startAnimation(animationFadeIn)
+                binding.buttonNavigasi.startAnimation(animationSlideDownToHidden)
+                binding.buttonNavigasi.postDelayed(
+                    {
+                        binding.buttonNavigasi.visibility = View.GONE
+                    },
+                    delayAnimSlide
+                )
             } else {
                 it.tag = "show"
                 binding.showSearch.setImageResource(R.drawable.ic_search_gray)
-                binding.layoutSearch.visibility = View.GONE
+                binding.layoutSearch.startAnimation(animationFadeOut)
+                binding.layoutSearch.postDelayed(
+                    {
+                        binding.layoutSearch.visibility = View.GONE
+                    },
+                    delayAnimFade
+                )
+                binding.buttonNavigasi.visibility = View.VISIBLE
+                binding.buttonNavigasi.startAnimation(animationSlideUpFromHidden)
             }
         }
 
@@ -67,7 +101,48 @@ class ViewMapsActivity :
         }
 
         binding.buttonNavigasi.setOnClickListener {
-            Toast.makeText(this, "Tombol Navigasi ditekan!", Toast.LENGTH_SHORT).show()
+            showNavigation(true)
+            clearMaps()
+        }
+
+        binding.navigationCloseBtn.setOnClickListener {
+            showNavigation(false)
+            clearMaps()
+            onMapReady(mMap)
+        }
+
+        binding.inputFirstLoc.setOnClickListener {
+            binding.radiogroupFirstLocation.visibility = View.VISIBLE
+        }
+
+        binding.inputLastLoc.setOnClickListener {
+            binding.radiogroupLastLocation.visibility = View.VISIBLE
+        }
+
+        binding.radiogroupFirstLocation.setOnCheckedChangeListener { group, checkedId ->
+            group.clearCheck()
+            group.visibility = View.GONE
+            when (checkedId) {
+                binding.buttonFirstMyloc.id -> {
+                    searchMyLocation()
+                }
+                binding.buttonFirstPickOnMap.id -> {
+                    pickLocationOnMap()
+                }
+            }
+        }
+
+        binding.radiogroupLastLocation.setOnCheckedChangeListener { group, checkedId ->
+            group.clearCheck()
+            group.visibility = View.GONE
+            when (checkedId) {
+                binding.buttonFirstMyloc.id -> {
+                    searchMyLocation()
+                }
+                binding.buttonFirstPickOnMap.id -> {
+                    pickLocationOnMap()
+                }
+            }
         }
     }
 
@@ -100,6 +175,45 @@ class ViewMapsActivity :
             )
             clusterManager.addItem(pointItem)
         }
+    }
+
+    private fun showNavigation(state: Boolean) {
+        if (state) {
+            binding.layoutNavigation.visibility = View.VISIBLE
+            binding.layoutNavigation.startAnimation(animationSlideDownFromHidden)
+            binding.buttonNavigasi.startAnimation(animationSlideDownToHidden)
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    binding.buttonNavigasi.visibility = View.GONE
+                },
+                delayAnimSlide
+            )
+            binding.topBar.visibility = View.INVISIBLE
+        } else {
+            binding.layoutNavigation.startAnimation(animationSlideUpToHidden)
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    binding.layoutNavigation.visibility = View.GONE
+                },
+                delayAnimSlide
+            )
+            binding.buttonNavigasi.visibility = View.VISIBLE
+            binding.buttonNavigasi.startAnimation(animationSlideUpFromHidden)
+            binding.topBar.visibility = View.VISIBLE
+        }
+    }
+
+    private fun searchMyLocation() {
+        Toast.makeText(this, "Mencari Lokasi Saya", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun pickLocationOnMap() {
+        Toast.makeText(this, "Pilih lokasi di maps", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun clearMaps() {
+        mMap.clear()
+        clusterManager.clearItems()
     }
 
     inner class PointItem(
