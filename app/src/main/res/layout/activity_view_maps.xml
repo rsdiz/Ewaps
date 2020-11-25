@@ -16,7 +16,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginStart="0dp"
         android:background="@color/purple"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="12dp">
 
         <TextView
             android:id="@+id/topic"
@@ -24,7 +24,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/showSearch"
             android:fontFamily="@font/roboto"
             android:text="@string/titikRawanTopic"
             android:textColor="@color/white"
@@ -43,27 +42,32 @@
 
     </RelativeLayout>
 
-    <!--  Maps Fragment  -->
-    <fragment
-        android:id="@+id/mapview"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <LinearLayout
+        android:id="@+id/mapLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topBar"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        tools:context=".ui.ViewMapsActivity" />
+        android:layout_alignParentBottom="true">
+
+        <!--  Maps Fragment  -->
+        <fragment
+            android:id="@+id/mapview"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.ViewMapsActivity" />
+
+    </LinearLayout>
 
     <!--  Layout Pencarian  -->
     <LinearLayout
         android:id="@+id/layoutSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/mapview"
+        android:layout_alignTop="@id/mapLayout"
         android:layout_margin="18dp"
         android:background="@drawable/custom_input"
-        android:elevation="12dp"
+        android:elevation="8dp"
         android:orientation="horizontal"
         android:padding="6dp"
         android:visibility="gone">
@@ -93,7 +97,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="32dp"
         android:background="@drawable/custom_bg_white_radius"
-        android:elevation="18dp"
+        android:elevation="8dp"
         android:gravity="center"
         android:paddingHorizontal="14dp"
         android:paddingVertical="8dp">
@@ -114,11 +118,27 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/buttonSelectLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/custom_button_2"
+        android:paddingHorizontal="24dp"
+        android:text="Pilih Lokasi"
+        android:elevation="12dp"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+<!--  Layout Navigasi  -->
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/layoutNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="-30dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
@@ -130,6 +150,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="30dp"
             android:layout_marginBottom="20dp"
             android:gravity="center">
 
@@ -161,7 +182,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
+                android:paddingStart="0dp"
+                android:paddingVertical="12dp"
+                android:paddingEnd="12dp"
                 android:src="@drawable/ic_trip_origin_white_24" />
 
             <Button
@@ -182,7 +205,7 @@
             android:id="@+id/radiogroup_firstLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
+            android:layout_marginStart="36dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -197,7 +220,7 @@
                 android:drawableStart="@drawable/ic_outline_my_location_gray_24"
                 android:drawablePadding="8dp"
                 android:padding="10dp"
-                android:text="Lokasi Saya"
+                android:text="@string/text_my_location"
                 android:textColor="@color/gray" />
 
             <RadioButton
@@ -209,7 +232,7 @@
                 android:drawableStart="@drawable/ic_outline_pin_drop_gray_24"
                 android:drawablePadding="8dp"
                 android:padding="10dp"
-                android:text="Pilih di Peta"
+                android:text="@string/text_select_on_map"
                 android:textColor="@color/gray" />
 
         </RadioGroup>
@@ -224,7 +247,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
+                android:paddingStart="0dp"
+                android:paddingVertical="12dp"
+                android:paddingEnd="12dp"
                 android:src="@drawable/ic_place_white_24" />
 
             <Button
@@ -245,7 +270,7 @@
             android:id="@+id/radiogroup_lastLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
+            android:layout_marginStart="36dp"
             android:orientation="horizontal"
             android:visibility="gone">
 

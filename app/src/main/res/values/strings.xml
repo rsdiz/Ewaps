@@ -12,6 +12,8 @@
     <string name="text_input_last_location">Pilih Lokasi Tujuan</string>
     <string name="text_input_first_location">Pilih Lokasi Awal</string>
     <string name="text_navigation">Navigasi</string>
+    <string name="text_my_location">Lokasi Saya</string>
+    <string name="text_select_on_map">Pilih di Peta</string>
 
     <!--    <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">-->
 <!--        AIzaSyABeSoek01kJF8OOStLhflc-Bkvbmh8_Vs-->
