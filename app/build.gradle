@@ -50,5 +50,9 @@ dependencies {
     implementation 'com.android.databinding:viewbinding:4.1.1'
     // Lottie
     implementation "com.airbnb.android:lottie:3.5.0"
+    // View Pager
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
+    // Rounded Image view
+    implementation "com.makeramen:roundedimageview:2.3.0"
 
 }

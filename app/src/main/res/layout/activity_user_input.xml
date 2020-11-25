@@ -9,9 +9,10 @@
     <RelativeLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/purple"
         android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
         >
 
         <TextView
@@ -20,79 +21,35 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/emergencyBtn"
             android:fontFamily="@font/roboto"
             android:text="@string/inputTopic"
             android:textColor="@color/white"
-            android:textSize="22sp" />
+            android:textSize="20sp" />
 
-        <ImageButton
-            android:id="@+id/emergencyBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_call"
-            android:layout_centerVertical="true"
-            android:layout_centerInParent="true"
-            android:layout_alignParentEnd="true"
-            android:background="@color/purple"
-            android:contentDescription="Emergency Call" />
 
     </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/topBar">
-
         <RelativeLayout
+            android:id="@+id/inputContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/info_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="40dp"
-                android:hint="@string/hintInfo"
-                android:autofillHints="@string/hintInfo"
-                android:drawablePadding="15dp"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="15dp"
-                android:drawableStart="@drawable/ic_info"
-                android:background="@drawable/custom_input"
-                android:textColor="@color/blueText"
-                android:fontFamily="@font/roboto"
-                android:inputType="text"/>
-
-            <Button
-                android:id="@+id/camera_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/info_id"
-                android:layout_marginHorizontal="20dp"
-                android:background="@drawable/custom_button_2"
-                android:layout_marginTop="20dp"
-                android:text="@string/cameraBtn"
-                android:textColor="@color/white"
-                android:fontFamily="@font/roboto"
-                android:textAllCaps="false"
-                android:textSize="18sp"
-                android:paddingVertical="15dp"
-                />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/topBar">
 
             <LinearLayout
-                android:id="@+id/image_container"
+                android:id="@+id/imgLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/camera_btn"
-                android:orientation="vertical"
-                android:layout_marginHorizontal="20dp">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/image_view"
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPagerImageSlider"
+                    android:layout_height="300dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:paddingTop="20dp"
+                    android:paddingHorizontal="40dp"
+                    >
+
+                </androidx.viewpager2.widget.ViewPager2>
 
             </LinearLayout>
 
@@ -102,42 +59,79 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 tools:context="com.example.mapwithmarker.MapsMarkerActivity"
-                android:layout_below="@id/image_container"
+                android:layout_below="@id/imgLayout"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
                 />
 
-            <Button
-                android:id="@+id/submit_btn"
+            <EditText
+                android:id="@+id/info_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/map"
                 android:layout_marginHorizontal="20dp"
-                android:background="@drawable/custom_button"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="80dp"
-                android:text="@string/submitBtn"
-                android:textColor="@color/white"
-                android:fontFamily="@font/roboto"
-                android:textAllCaps="false"
-                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:hint="@string/hintInfo"
+                android:autofillHints="@string/hintInfo"
+                android:drawablePadding="15dp"
+                android:paddingHorizontal="15dp"
                 android:paddingVertical="15dp"
-                />
+                android:drawableStart="@drawable/ic_info"
+                android:background="@drawable/custom_input"
+                android:textColor="@color/blueText"
+                android:fontFamily="@font/roboto"
+                android:inputType="text"
+                android:layout_below="@+id/map"/>
 
 
         </RelativeLayout>
 
-    </ScrollView>
 
-    <include
-        android:id="@+id/tablayout"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
+    <LinearLayout
+        android:id="@+id/bottomUserInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="10dp"
-        layout="@layout/tablayout"
-        android:layout_centerHorizontal="true"
-        />
+        android:paddingVertical="15dp"
+        android:gravity="center"
+        android:paddingHorizontal="20dp"
+        android:background="@drawable/custom_bottom_nav"
+        android:elevation="20dp">
+
+        <ImageView
+            android:id="@+id/camera_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_camera"
+            android:padding="12dp"
+            android:background="@drawable/custom_bg_icon"
+            />
+
+        <Button
+            android:id="@+id/submit_btn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_button"
+            android:text="@string/submitBtn"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:paddingVertical="15dp"
+            android:layout_marginHorizontal="20dp"
+            />
+
+        <ImageView
+            android:id="@+id/fileBtn"
+            android:padding="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_file"
+            android:background="@drawable/custom_bg_icon"
+            />
+
+    </LinearLayout>
+
 
 </RelativeLayout>
