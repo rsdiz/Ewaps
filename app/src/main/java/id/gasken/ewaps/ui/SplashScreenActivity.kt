@@ -18,7 +18,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed(
             {
-                startActivity(Intent(this, UserInputActivity::class.java))
+                startActivity(Intent(this, ViewMapsActivity::class.java))
                 finish()
             },
             1900

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'com.google.gms.google-services'
 
 
@@ -19,7 +20,7 @@ android {
 
     buildTypes {
         release {
-//            minifyEnabled adb nodaemon server
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -48,6 +49,10 @@ dependencies {
 
     // Google MAPS
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.1.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:2.2.0'
+    implementation 'com.google.android.libraries.places:places:2.4.0'
     // ViewBinding
     implementation 'com.android.databinding:viewbinding:4.1.1'
     // Lottie
@@ -62,4 +67,6 @@ dependencies {
     // Firebase
     implementation 'com.google.firebase:firebase-firestore:22.0.0'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
 }
