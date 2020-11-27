@@ -38,6 +38,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.firebase:firebase-firestore:22.0.0'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
+    implementation 'com.google.android.material:material:1.0.0'
 
     testImplementation 'junit:junit:4.13.1'
 
@@ -54,5 +55,10 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     // Rounded Image view
     implementation "com.makeramen:roundedimageview:2.3.0"
+
+    implementation "androidx.drawerlayout:drawerlayout:1.1.1"
+
+    implementation "com.github.hajiyevelnur92:intentanimation:1.0"
+
 
 }
