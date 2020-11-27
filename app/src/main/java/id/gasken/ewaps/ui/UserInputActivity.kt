@@ -30,40 +30,34 @@ import id.gasken.ewaps.custom.ImageResizer
 import id.gasken.ewaps.custom.SliderAdapter2
 import id.gasken.ewaps.custom.SliderItemBitmap
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
+import id.gasken.ewaps.tool.viewBinding
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 
-class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener{
+class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
 
-    private lateinit var binding: ActivityUserInputBinding
+    private val binding: ActivityUserInputBinding by viewBinding()
 
     private lateinit var mMap: GoogleMap
 
     private val firestore = FirebaseFirestore.getInstance()
 
-    private val mStorageRef = FirebaseStorage.getInstance().getReference()
+    private val mStorageRef = FirebaseStorage.getInstance().reference
 
-    private val reportData: MutableMap<String, Any> = HashMap<String, Any>()
+    private val reportData: MutableMap<String, Any> = HashMap()
 
     private val sliderItems: ArrayList<SliderItemBitmap> = ArrayList()
 
     private var uidString = ""
 
     private var filePathList = ArrayList<Uri>()
-//    private
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityUserInputBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        val mapFragment = (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
-
-        mapFragment.getMapAsync(this)
 
         binding.cameraBtn.setOnClickListener {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -74,16 +68,20 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 //            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 //            startActivityForResult(cameraIntent, 0)
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE
-                )!= PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.checkSelfPermission(
+                    this, android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
 
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100
+                )
 
                 return@setOnClickListener
             }
 
-            val intent= Intent()
+            val intent = Intent()
                 .setType("image/*")
                 .setAction(Intent.ACTION_GET_CONTENT)
                 .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
@@ -93,23 +91,21 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         binding.submitBtn.setOnClickListener {
             if (binding.infoId.text.toString() == "") {
                 Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
-
-            }else{
+            } else {
                 addReportData()
-
             }
         }
 
+        val mapFragment = (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
+
+        mapFragment.getMapAsync(this)
     }
 
-    private fun addReportData(){
+    private fun addReportData() {
 
         val progressDialog = ProgressDialog(this)
-
         progressDialog.setTitle("Uploading...")
-
         progressDialog.show()
-
         uploadImage()
 
         reportData["description"] = binding.submitBtn.text.toString()
@@ -123,25 +119,18 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
             .addOnFailureListener {
                 Toast.makeText(this, "gagal upload", Toast.LENGTH_SHORT).show()
             }
-
     }
 
-    private fun addImage(bitmap: Bitmap){
+    private fun addImage(bitmap: Bitmap) {
         val sliderItemBitmap = SliderItemBitmap()
-
         val reduceBitmap = ImageResizer().reduceBitmapSize(bitmap, 480, 640)
-
         sliderItemBitmap.bitmap = reduceBitmap
-
         sliderItems.add(sliderItemBitmap)
     }
 
-    private fun showImage(){
+    private fun showImage() {
         val viewPager2 = binding.viewPagerImageSlider
-
-
         viewPager2.adapter = SliderAdapter2(sliderItems, viewPager2)
-
         viewPager2.clipToPadding = false
         viewPager2.clipChildren = false
         viewPager2.offscreenPageLimit = 3
@@ -154,47 +143,34 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
             val r = 1 - abs(position)
             page.scaleY = 0.85f + r * 0.15f
         }
-//
+
         viewPager2.setPageTransformer(compositePageTransformer)
     }
 
-    private fun uploadImage(){
+    private fun uploadImage() {
+        uidString = UUID.randomUUID().toString()
+        reportData["imagePath"] = "'images/$uidString'"
 
-            uidString = UUID.randomUUID().toString()
+        for ((index, value) in filePathList.withIndex()) {
+            val ref: StorageReference = mStorageRef.child("images/$uidString/$index")
 
-            reportData["imagePath"] = "'images/$uidString'"
-
-            for ((index, value) in filePathList.withIndex()){
-                val ref : StorageReference = mStorageRef.child("images/$uidString/$index")
-
-                ref.putFile(value)
-                    .addOnSuccessListener {
-
-                    }
-                    .addOnFailureListener {
-
-                    }
-            }
-
-
-
-
-
+            ref.putFile(value)
+                .addOnSuccessListener {
+                }
+                .addOnFailureListener {
+                }
+        }
     }
 
-
     override fun onMarkerDragStart(p0: Marker?) {
-//        TODO("Not yet implemented")
     }
 
     override fun onMarkerDrag(p0: Marker?) {
-//        TODO("Not yet implemented")
-
     }
 
     override fun onMarkerDragEnd(marker: Marker?) {
-        if (marker != null){
-            reportData.put("location", marker.position)
+        if (marker != null) {
+            reportData["location"] = marker.position
         }
     }
 
@@ -215,14 +191,13 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         mMap.setOnMarkerDragListener(this)
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
             0 -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    if (data != null){
+                    if (data != null) {
                         val bitmap = data.extras?.get("data") as Bitmap
 //                        val bitmap: Bitmap =
 //                            MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
@@ -236,44 +211,30 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
             1 -> {
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
-
-                        if(data.data != null) {
-
+                        if (data.data != null) {
                             try {
                                 val imageUri = data.data!!
                                 val bitmap: Bitmap =
                                     MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
                                 filePathList.add(imageUri)
                                 addImage(bitmap)
-                            }catch (e: IOException){
+                            } catch (e: IOException) {
                                 Toast.makeText(this, "Error Occured", Toast.LENGTH_SHORT).show()
-
-                            }catch (e: FileNotFoundException) {
+                            } catch (e: FileNotFoundException) {
                                 Toast.makeText(this, "File Not Found", Toast.LENGTH_SHORT).show()
                             }
-
-                        }
-                        else{
+                        } else {
                             val clipData = data.clipData
-
-                            if (clipData != null){
-
-                                for (i in 0 until clipData.itemCount){
-
+                            if (clipData != null) {
+                                for (i in 0 until clipData.itemCount) {
                                     val imageUri = clipData.getItemAt(i).uri
-
-                                    val bitmap : Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
-
+                                    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
                                     filePathList.add(imageUri)
                                     addImage(bitmap)
                                 }
-
                             }
-
                         }
-
                         showImage()
-
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
@@ -282,4 +243,3 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         }
     }
 }
-
