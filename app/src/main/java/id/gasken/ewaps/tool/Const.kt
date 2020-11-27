@@ -8,6 +8,9 @@ object Const {
     val POSITION = "position"
     val NOTE = "note"
     val LASTUPDATE = "lastUpdate"
+    val IMAGEPATH = "imagePath"
+    val LATITUDE = "latitude"
+    val LONGITUDE = "longitude"
 
     val currentTimestamp: Timestamp
         get() = Timestamp.now()

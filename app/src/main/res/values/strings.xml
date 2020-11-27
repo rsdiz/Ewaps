@@ -14,6 +14,7 @@
     <string name="text_navigation">Navigasi</string>
     <string name="text_my_location">Lokasi Saya</string>
     <string name="text_select_on_map">Pilih di Peta</string>
+    <string name="text_report_location">Laporkan Lokasi!</string>
 
     <!--    <string name="google_api_key" templateMergeStrategy="preserve" translatable="false">-->
 <!--        AIzaSyABeSoek01kJF8OOStLhflc-Bkvbmh8_Vs-->

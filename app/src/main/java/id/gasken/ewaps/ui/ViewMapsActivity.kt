@@ -16,10 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.view.animation.BounceInterpolator
-import android.widget.Button
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.* // ktlint-disable no-wildcard-imports
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,15 +27,15 @@ import com.google.android.gms.maps.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.maps.model.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import id.gasken.ewaps.R
 import id.gasken.ewaps.data.Points
 import id.gasken.ewaps.databinding.ActivityViewMapsBinding
-import id.gasken.ewaps.tool.Const
-import id.gasken.ewaps.tool.DirectionParser
-import id.gasken.ewaps.tool.viewBinding
+import id.gasken.ewaps.tool.* // ktlint-disable no-wildcard-imports
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,32 +48,43 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.math.max
 
 class ViewMapsActivity :
     AppCompatActivity(),
-    OnMapReadyCallback,
-    GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnMarkerDragListener {
+    OnMapReadyCallback {
     private val binding: ActivityViewMapsBinding by viewBinding()
 
     private lateinit var mMap: GoogleMap
     private val db = FirebaseFirestore.getInstance()
+
+    // Create a storage reference from our app
+    val storage = FirebaseStorage.getInstance()
     private val data: MutableList<Points> = mutableListOf()
     private lateinit var clusterManager: ClusterManager<PointItem>
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
     // Variable for place picker
     private val tag = "ViewMapsActivity"
     private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+
     // Variable for currently location of the devices
     private lateinit var mLastKnownLocation: Location
     private var mLocationPermissionGranted: Boolean = true
     private lateinit var locationManager: LocationManager
+
     // Variable for saving location
     private var firstLocation: Points = Points()
     private var secondLocation: Points = Points()
     private var isLocationAlreadySet = arrayOf(false, false)
+
     // Variable for active drag location
     private var activeLocation = 0
+
+    // Variable for check
+    private var isUserSetReportLocation = false
+    private var isNavigationShow = false
+    private var stateBottomSheet = BottomSheetBehavior.STATE_HIDDEN
+    private var markerSelected = -1
 
     private val requestSetting = LocationRequest.create().apply {
         fastestInterval = 10000
@@ -97,6 +105,10 @@ class ViewMapsActivity :
         get() = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_in)
     private val animationFadeOut
         get() = AnimationUtils.loadAnimation(applicationContext, R.anim.fade_out)
+    private val animationSlideRightToHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_right_to_hide)
+    private val animationSlideLeftFromHidden
+        get() = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_left_from_hide)
     private val delayAnimSlide: Long = 300
     private val delayAnimFade: Long = 400
 
@@ -113,6 +125,7 @@ class ViewMapsActivity :
                         ?.let { LatLng(it.latitude, it.longitude) }!!
                     point.note = document.getString(Const.NOTE)!!
                     point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
+                    point.imagePath = document.getString(Const.IMAGEPATH)!!
                     data.add(point)
                 }
 
@@ -121,46 +134,30 @@ class ViewMapsActivity :
                 mapFragment.getMapAsync(this)
             }
             .addOnFailureListener {
-                Log.e("MAP", "Error occurred, cause ${it.message}")
+                Log.e(tag, "Error occurred, cause ${it.message}")
             }
+
+        val bottomSheet: LinearLayout = binding.layoutBottomSheet
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    stateBottomSheet = newState
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            }
+        )
 
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-        binding.showSearch.setOnClickListener {
-            if (it.tag == "show") {
-                it.tag = "hide"
-                binding.showSearch.setImageResource(R.drawable.ic_baseline_close_24)
-                binding.layoutSearch.visibility = View.VISIBLE
-                binding.layoutSearch.startAnimation(animationFadeIn)
-                binding.buttonNavigasi.startAnimation(animationSlideDownToHidden)
-                binding.buttonNavigasi.postDelayed(
-                    {
-                        binding.buttonNavigasi.visibility = View.GONE
-                    },
-                    delayAnimSlide
-                )
-            } else {
-                it.tag = "show"
-                binding.showSearch.setImageResource(R.drawable.ic_search_gray)
-                binding.layoutSearch.startAnimation(animationFadeOut)
-                binding.layoutSearch.postDelayed(
-                    {
-                        binding.layoutSearch.visibility = View.GONE
-                    },
-                    delayAnimFade
-                )
-                binding.buttonNavigasi.visibility = View.VISIBLE
-                binding.buttonNavigasi.startAnimation(animationSlideUpFromHidden)
-            }
-        }
-
-        binding.buttonSearchPoint.setOnClickListener {
-            Toast.makeText(this, "Tombol Pencarian ditekan!", Toast.LENGTH_SHORT).show()
-        }
-
         binding.buttonNavigasi.setOnClickListener {
             showNavigation(true)
-            try { mFusedLocationProviderClient.flushLocations() } catch (e: Exception) {}
+            try {
+                mFusedLocationProviderClient.flushLocations()
+            } catch (e: Exception) {
+            }
             mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
             clearMaps()
         }
@@ -205,6 +202,62 @@ class ViewMapsActivity :
                 }
             }
         }
+
+        binding.buttonReport.setOnClickListener {
+            isUserSetReportLocation = true
+            setTopic("Laporkan Titik Rawan")
+            showButtonReport(false)
+            showButtonNextReport(true)
+            pickReportLocationOnMap()
+        }
+    }
+
+    private fun setTopic(title: String = getString(R.string.titikRawanTopic)) {
+        binding.topic.text = title
+    }
+
+    private fun showButtonReport(state: Boolean) {
+        if (state) {
+            binding.buttonReport.visibility = View.VISIBLE
+            binding.buttonReport.startAnimation(animationSlideLeftFromHidden)
+        } else {
+            binding.buttonReport.startAnimation(animationSlideRightToHidden)
+            binding.buttonReport.visibility = View.GONE
+        }
+    }
+
+    private fun showButtonNextReport(state: Boolean) {
+        if (state) {
+            binding.buttonNextReport.visibility = View.VISIBLE
+            binding.buttonNextReport.startAnimation(animationSlideUpFromHidden)
+        } else {
+            binding.buttonNextReport.startAnimation(animationSlideDownToHidden)
+            binding.buttonNextReport.postDelayed(
+                {
+                    binding.buttonNextReport.visibility = View.GONE
+                },
+                delayAnimSlide
+            )
+        }
+    }
+
+    private fun pickReportLocationOnMap() {
+        showButtonNavigation(false)
+        val marker = mMap.addMarker(
+            MarkerOptions()
+                .position(LatLng(-7.797068, 110.370529))
+                .title("Lokasi yang ingin dilaporkan")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag_marker", 100, 100)))
+        )
+        mMap.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(-7.797068, 110.370529),
+                12F
+            )
+        )
+        mMap.setOnMarkerDragListener(PickReportLocation())
+        PickReportLocation().onMarkerDragEnd(marker)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -217,14 +270,13 @@ class ViewMapsActivity :
     }
 
     private fun setupCluster(points: MutableList<Points>) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-7.797068, 110.370529), 15f))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-7.797068, 110.370529), 15f))
 
         clusterManager = ClusterManager(this, mMap)
-
-        mMap.setOnCameraIdleListener(clusterManager)
-        mMap.setOnMarkerClickListener(this)
-
         addPoints(points)
+
+        clusterManager.markerCollection.setOnMarkerClickListener(MarkerAction())
+        mMap.setOnCameraIdleListener(clusterManager)
     }
 
     private fun addPoints(points: MutableList<Points>) {
@@ -239,6 +291,7 @@ class ViewMapsActivity :
     }
 
     private fun showNavigation(state: Boolean) {
+        isNavigationShow = state
         val params = RelativeLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -254,6 +307,31 @@ class ViewMapsActivity :
                 },
                 delayAnimSlide
             )
+            showButtonNavigation(!state)
+            showButtonReport(!state)
+            binding.topBar.visibility = View.INVISIBLE
+        } else {
+            binding.layoutNavigation.startAnimation(animationSlideUpToHidden)
+            params.addRule(RelativeLayout.BELOW, R.id.topBar)
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+            binding.mapLayout.layoutParams = params
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    binding.layoutNavigation.visibility = View.GONE
+                },
+                delayAnimSlide
+            )
+            showButtonNavigation(!state)
+            showButtonReport(!state)
+            binding.topBar.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showButtonNavigation(state: Boolean) {
+        if (state) {
+            binding.buttonNavigasi.visibility = View.VISIBLE
+            binding.buttonNavigasi.startAnimation(animationSlideUpFromHidden)
+        } else {
             binding.buttonNavigasi.startAnimation(animationSlideDownToHidden)
             Handler(Looper.getMainLooper()).postDelayed(
                 {
@@ -261,21 +339,6 @@ class ViewMapsActivity :
                 },
                 delayAnimSlide
             )
-            binding.topBar.visibility = View.INVISIBLE
-        } else {
-            binding.layoutNavigation.startAnimation(animationSlideUpToHidden)
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    binding.layoutNavigation.visibility = View.GONE
-                    params.addRule(RelativeLayout.BELOW, R.id.topBar)
-                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-                    binding.mapLayout.layoutParams = params
-                },
-                delayAnimSlide
-            )
-            binding.buttonNavigasi.visibility = View.VISIBLE
-            binding.buttonNavigasi.startAnimation(animationSlideUpFromHidden)
-            binding.topBar.visibility = View.VISIBLE
         }
     }
 
@@ -319,33 +382,35 @@ class ViewMapsActivity :
                                 val builder = LocationSettingsRequest.Builder()
                                     .addLocationRequest(requestSetting)
                                 val client = LocationServices.getSettingsClient(this)
-                                client.checkLocationSettings(builder.build()).addOnCompleteListener { task ->
-                                    try {
-                                        val state: LocationSettingsStates = task.result!!.locationSettingsStates
-                                        Log.d(tag, task.result!!.toString())
-                                        Log.e(
-                                            "LOG",
-                                            "LocationSettings: \n" +
-                                                " GPS present: ${state.isGpsPresent} \n" +
-                                                " GPS usable: ${state.isGpsUsable} \n" +
-                                                " Location present: " +
-                                                "${state.isLocationPresent} \n" +
-                                                " Location usable: " +
-                                                "${state.isLocationUsable} \n" +
-                                                " Network Location present: " +
-                                                "${state.isNetworkLocationPresent} \n" +
-                                                " Network Location usable: " +
-                                                "${state.isNetworkLocationUsable} \n"
-                                        )
-                                    } catch (e: RuntimeExecutionException) {
-                                        Log.d(tag, "Error occured!")
-                                        if (e.cause is ResolvableApiException)
-                                            (e.cause as ResolvableApiException).startResolutionForResult(
-                                                this,
-                                                requestCheckState
+                                client.checkLocationSettings(builder.build())
+                                    .addOnCompleteListener { task ->
+                                        try {
+                                            val state: LocationSettingsStates =
+                                                task.result!!.locationSettingsStates
+                                            Log.d(tag, task.result!!.toString())
+                                            Log.e(
+                                                "LOG",
+                                                "LocationSettings: \n" +
+                                                    " GPS present: ${state.isGpsPresent} \n" +
+                                                    " GPS usable: ${state.isGpsUsable} \n" +
+                                                    " Location present: " +
+                                                    "${state.isLocationPresent} \n" +
+                                                    " Location usable: " +
+                                                    "${state.isLocationUsable} \n" +
+                                                    " Network Location present: " +
+                                                    "${state.isNetworkLocationPresent} \n" +
+                                                    " Network Location usable: " +
+                                                    "${state.isNetworkLocationUsable} \n"
                                             )
+                                        } catch (e: RuntimeExecutionException) {
+                                            Log.d(tag, "Error occured!")
+                                            if (e.cause is ResolvableApiException)
+                                                (e.cause as ResolvableApiException).startResolutionForResult(
+                                                    this,
+                                                    requestCheckState
+                                                )
+                                        }
                                     }
-                                }
 
                                 val locationUpdates = object : LocationCallback() {
                                     override fun onLocationResult(result: LocationResult?) {
@@ -363,7 +428,11 @@ class ViewMapsActivity :
                                     }
                                 }
 
-                                mFusedLocationProviderClient.requestLocationUpdates(requestSetting, locationUpdates, null)
+                                mFusedLocationProviderClient.requestLocationUpdates(
+                                    requestSetting,
+                                    locationUpdates,
+                                    null
+                                )
                                 mFusedLocationProviderClient.removeLocationUpdates(locationUpdates)
                             }
 
@@ -403,7 +472,11 @@ class ViewMapsActivity :
                                                 MarkerOptions()
                                                     .title(firstLocation.title)
                                                     .position(firstLocation.position)
-                                                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("marker1", 100, 100)))
+                                                    .icon(
+                                                        BitmapDescriptorFactory.fromBitmap(
+                                                            resizeMapIcons("marker1", 100, 100)
+                                                        )
+                                                    )
                                             )
                                             showMyLocationOnMap(false)
                                         }
@@ -420,7 +493,11 @@ class ViewMapsActivity :
                                                 MarkerOptions()
                                                     .title(secondLocation.title)
                                                     .position(secondLocation.position)
-                                                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("marker1", 100, 100)))
+                                                    .icon(
+                                                        BitmapDescriptorFactory.fromBitmap(
+                                                            resizeMapIcons("marker1", 100, 100)
+                                                        )
+                                                    )
                                             )
                                             showMyLocationOnMap(false)
                                         }
@@ -566,8 +643,8 @@ class ViewMapsActivity :
             )
         )
 
-        mMap.setOnMarkerDragListener(this)
-        onMarkerDragEnd(marker)
+        mMap.setOnMarkerDragListener(PickNavigationLocation())
+        PickNavigationLocation().onMarkerDragEnd(marker)
     }
 
     /**
@@ -681,91 +758,6 @@ class ViewMapsActivity :
         }
     }
 
-    override fun onMarkerDragStart(marker: Marker?) {
-        binding.buttonSelectLocation.let {
-            it.startAnimation(animationSlideDownToHidden)
-            it.postDelayed({ it.visibility = View.GONE }, delayAnimSlide)
-        }
-    }
-
-    override fun onMarkerDrag(marker: Marker?) {
-    }
-
-    override fun onMarkerDragEnd(marker: Marker) {
-        binding.buttonSelectLocation.let { button ->
-            button.startAnimation(animationSlideUpFromHidden)
-            button.postDelayed({ button.visibility = View.VISIBLE }, delayAnimSlide)
-            button.setOnClickListener {
-                button.startAnimation(animationFadeOut)
-                button.postDelayed(
-                    {
-                        it.visibility = View.GONE
-                    },
-                    delayAnimFade
-                )
-                when (activeLocation) {
-                    1 -> {
-                        isLocationAlreadySet[0] = true
-                        firstLocation =
-                            Points(
-                                position = LatLng(
-                                    marker.position.latitude,
-                                    marker.position.longitude
-                                ),
-                                title = "Lokasi Awal"
-                            )
-                    }
-                    2 -> {
-                        isLocationAlreadySet[1] = true
-                        secondLocation =
-                            Points(
-                                position = LatLng(
-                                    marker.position.latitude,
-                                    marker.position.longitude
-                                ),
-                                title = "Lokasi Tujuan"
-                            )
-                    }
-                }
-                doRequestDirection()
-                activeLocation = 0
-            }
-        }
-    }
-
-    override fun onMarkerClick(marker: Marker?): Boolean {
-        if (marker == null) return false
-        // Markers have a z-index that is settable and gettable.
-        marker.zIndex += 1.0f
-        Toast.makeText(
-            this, "${marker.title} z-index set to ${marker.zIndex}",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        val handler = Handler(Looper.getMainLooper())
-        val start = SystemClock.uptimeMillis()
-        val duration = 1500
-
-        val interpolator = BounceInterpolator()
-
-        handler.post(object : Runnable {
-            override fun run() {
-                val elapsed = SystemClock.uptimeMillis() - start
-                val t = max(
-                    1 - interpolator.getInterpolation(elapsed.toFloat() / duration), 0f
-                )
-                marker.setAnchor(0.5f, 1.0f + 2 * t)
-
-                // Post again 16ms later.
-                if (t > 0.0) {
-                    handler.postDelayed(this, 16)
-                }
-            }
-        })
-
-        return false
-    }
-
     /**
      * Function for create url for Direction API to get route from firstLocation to secondLocation
      *
@@ -830,6 +822,26 @@ class ViewMapsActivity :
         return responseString
     }
 
+    override fun onBackPressed() {
+        if (isUserSetReportLocation) {
+            isUserSetReportLocation = false
+            setTopic()
+            showButtonReport(true)
+            showButtonNextReport(false)
+            showButtonNavigation(true)
+            clearMaps()
+            onMapReady(mMap)
+            return
+        }
+
+        if (isNavigationShow) {
+            binding.navigationCloseBtn.performClick()
+            return
+        }
+
+        super.onBackPressed()
+    }
+
     inner class PointItem(
         private val title: String,
         private val position: LatLng,
@@ -838,5 +850,152 @@ class ViewMapsActivity :
         override fun getPosition(): LatLng = position
         override fun getTitle(): String = title
         override fun getSnippet(): String = snippet
+    }
+
+    inner class PickNavigationLocation : GoogleMap.OnMarkerDragListener {
+        override fun onMarkerDragStart(marker: Marker?) {
+            binding.buttonSelectLocation.let {
+                it.startAnimation(animationSlideDownToHidden)
+                it.postDelayed({ it.visibility = View.GONE }, delayAnimSlide)
+            }
+        }
+
+        override fun onMarkerDrag(marker: Marker?) {
+        }
+
+        override fun onMarkerDragEnd(marker: Marker) {
+            binding.buttonSelectLocation.let { button ->
+                button.visibility = View.VISIBLE
+                button.startAnimation(animationSlideUpFromHidden)
+//                button.postDelayed({ button.visibility = View.VISIBLE }, delayAnimSlide)
+                button.setOnClickListener {
+                    button.startAnimation(animationFadeOut)
+                    button.postDelayed(
+                        {
+                            it.visibility = View.GONE
+                        },
+                        delayAnimFade
+                    )
+                    when (activeLocation) {
+                        1 -> {
+                            isLocationAlreadySet[0] = true
+                            firstLocation =
+                                Points(
+                                    position = LatLng(
+                                        marker.position.latitude,
+                                        marker.position.longitude
+                                    ),
+                                    title = "Lokasi Awal"
+                                )
+                        }
+                        2 -> {
+                            isLocationAlreadySet[1] = true
+                            secondLocation =
+                                Points(
+                                    position = LatLng(
+                                        marker.position.latitude,
+                                        marker.position.longitude
+                                    ),
+                                    title = "Lokasi Tujuan"
+                                )
+                        }
+                    }
+                    doRequestDirection()
+                    activeLocation = 0
+                }
+            }
+        }
+    }
+
+    inner class PickReportLocation : GoogleMap.OnMarkerDragListener {
+        override fun onMarkerDragStart(marker: Marker?) {
+            binding.buttonNextReport.let {
+                it.startAnimation(animationSlideDownToHidden)
+                it.postDelayed({ it.visibility = View.GONE }, delayAnimSlide)
+            }
+        }
+
+        override fun onMarkerDrag(marker: Marker?) {
+        }
+
+        override fun onMarkerDragEnd(marker: Marker) {
+            binding.buttonNextReport.let { button ->
+                button.visibility = View.VISIBLE
+                button.startAnimation(animationSlideUpFromHidden)
+                button.setOnClickListener {
+                    val bundle = Bundle()
+                    bundle.putDouble(Const.LATITUDE, marker.position.latitude)
+                    bundle.putDouble(Const.LONGITUDE, marker.position.longitude)
+                    intent = Intent(this@ViewMapsActivity, UserInputActivity::class.java)
+                    intent.putExtra("location", bundle)
+                    startActivity(intent)
+                }
+            }
+        }
+    }
+
+    inner class MarkerAction : GoogleMap.OnMarkerClickListener {
+        val storageRef = storage.reference
+
+        override fun onMarkerClick(marker: Marker): Boolean {
+            run(marker)
+            return true
+        }
+
+        private fun run(marker: Marker) {
+            var i = 0
+            data.iterator().forEach { item ->
+                if (marker.position.latitude == item.position.latitude && marker.position.longitude == item.position.longitude) {
+                    markerSelected = i
+                    return@forEach
+                } else {
+                    i++
+                }
+            }
+            Log.d("STATE", stateBottomSheet.toString())
+            Log.d("MARKER", markerSelected.toString())
+
+            when (stateBottomSheet) {
+                BottomSheetBehavior.STATE_HIDDEN, BottomSheetBehavior.STATE_COLLAPSED -> {
+
+                    try {
+                        findViewById<ImageView>(R.id.imagePoint).apply {
+                            val imageResource =
+                                storageRef.child(data[markerSelected].imagePath).child("0")
+                            GlideApp.with(this@ViewMapsActivity)
+                                .load(imageResource)
+                                .placeholder(R.drawable.flag_marker)
+                                .centerCrop()
+                                .into(this)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    findViewById<TextView>(R.id.titlePoint).apply {
+                        this.text = data[markerSelected].title
+                    }
+                    findViewById<TextView>(R.id.notePoint).apply {
+                        this.text = data[markerSelected].note
+                    }
+
+                    BottomSheetBehavior.STATE_HALF_EXPANDED.let {
+                        bottomSheetBehavior.state = it
+                        stateBottomSheet = it
+                    }
+                }
+
+                BottomSheetBehavior.STATE_HALF_EXPANDED, BottomSheetBehavior.STATE_EXPANDED -> {
+                    if (markerSelected == -1) {
+                        return
+                    }
+
+                    BottomSheetBehavior.STATE_HIDDEN.let {
+                        bottomSheetBehavior.state = it
+                        stateBottomSheet = it
+                        markerSelected = -1
+                    }
+                }
+            }
+        }
     }
 }

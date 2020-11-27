@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.ViewMapsActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <!--  Layout App Bar  -->
     <RelativeLayout
@@ -29,17 +34,6 @@
             android:textColor="@color/white"
             android:textSize="22sp" />
 
-        <ImageButton
-            android:id="@+id/showSearch"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="@color/purple"
-            android:contentDescription="@string/cari_titik_rawan"
-            android:src="@drawable/ic_search_gray"
-            android:tag="show" />
-
     </RelativeLayout>
 
     <LinearLayout
@@ -56,35 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".ui.ViewMapsActivity" />
-
-    </LinearLayout>
-
-    <!--  Layout Pencarian  -->
-    <LinearLayout
-        android:id="@+id/layoutSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/mapLayout"
-        android:layout_margin="18dp"
-        android:background="@drawable/custom_input"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        android:padding="6dp"
-        android:visibility="gone">
-
-        <EditText
-            android:id="@+id/inputSearchPoint"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="textAutoComplete" />
-
-        <ImageButton
-            android:id="@+id/buttonSearchPoint"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/custom_button_2"
-            android:src="@drawable/ic_search_gray" />
 
     </LinearLayout>
 
@@ -117,6 +82,46 @@
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <!--  Layout Tombol Laporkan Lokasi  -->
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/buttonNextReport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/custom_bg_white_radius"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="8dp">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/speaker" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lato_bold"
+            android:text="@string/text_report_location"
+            android:textColor="@color/blueText"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/buttonReport"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_margin="12dp"
+        android:layout_below="@id/topBar"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/speaker" />
 
     <Button
         android:id="@+id/buttonSelectLocation"
@@ -303,4 +308,49 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:padding="10dp"
+        android:background="@color/white"
+        android:elevation="12dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <ImageView
+            android:id="@+id/imagePoint"
+            android:layout_width="150dp"
+            android:layout_height="150dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/titlePoint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/lato"
+                android:text="Lokasi Rawan Kecelakaan"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/notePoint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato"
+                android:text="Keterangan" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

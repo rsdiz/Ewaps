@@ -59,10 +59,6 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mapFragment = (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
-
-        mapFragment.getMapAsync(this)
-
         binding.cameraBtn.setOnClickListener {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(intent, 0)
@@ -99,6 +95,10 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 addReportData()
             }
         }
+
+        val mapFragment = (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
+
+        mapFragment.getMapAsync(this)
     }
 
     private fun addReportData() {

@@ -11,5 +11,6 @@ data class Points(
     var title: String = "",
     var position: LatLng = LatLng(0.0, 0.0),
     var note: String = "",
+    var imagePath: String = "",
     var lastUpdate: Timestamp = Const.currentTimestamp
 ) : Parcelable
