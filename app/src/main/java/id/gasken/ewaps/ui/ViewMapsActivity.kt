@@ -145,27 +145,32 @@ class ViewMapsActivity :
                     point.imagePath = document.getString(Const.IMAGEPATH)!!
                     data.add(point)
                 }
+
+                db.collection(Const.DB_REPORT).get()
+                    .addOnSuccessListener { result2 ->
+                        for (document in result2) {
+                            val point = Points()
+                            point.title = "Lokasi Rawan"
+                            point.position = document.getGeoPoint(Const.POSITION)
+                                ?.let { LatLng(it.latitude, it.longitude) }!!
+                            point.note = document.getString(Const.NOTE)!!
+                            point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
+                            point.imagePath = document.getString(Const.IMAGEPATH)!!
+                            data.add(point)
+                        }
+
+                        val mapFragment =
+                            supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
+                        mapFragment.getMapAsync(this)
+                    }
+                    .addOnFailureListener {
+                        Log.e(tag, "Error occurred, cause ${it.message}")
+                    }
             }
             .addOnFailureListener {
                 Log.e(tag, "Error occurred, cause ${it.message}")
             }
 
-        db.collection(Const.DB_REPORT).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val point = Points()
-                    point.title = "Lokasi Rawan"
-                    point.position = document.getGeoPoint(Const.POSITION)
-                        ?.let { LatLng(it.latitude, it.longitude) }!!
-                    point.note = document.getString(Const.NOTE)!!
-                    point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
-                    point.imagePath = document.getString(Const.IMAGEPATH)!!
-                    data.add(point)
-                }
-            }
-            .addOnFailureListener {
-                Log.e(tag, "Error occurred, cause ${it.message}")
-            }
 
         val bottomSheet: LinearLayout = binding.layoutBottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -267,10 +272,6 @@ class ViewMapsActivity :
                 )
             }
         }
-
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
-        mapFragment.getMapAsync(this)
     }
 
     private fun showButtonAcceleration(state: Boolean) {
