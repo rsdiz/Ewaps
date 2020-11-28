@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.UserInputActivity"
+
     android:background="@color/blue"
 
     android:id="@+id/drawer_layout">
@@ -123,26 +124,30 @@
             android:gravity="center"
             android:paddingHorizontal="20dp"
             android:background="@drawable/custom_bottom_nav"
-            android:elevation="20dp">
+            android:elevation="20dp"
+            android:weightSum="5"
+            >
 
             <ImageView
                 android:id="@+id/camera_btn"
-                android:layout_width="wrap_content"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_camera"
+                android:layout_weight="1"
                 android:padding="12dp"
                 android:background="@drawable/custom_bg_icon"
                 />
 
             <Button
                 android:id="@+id/submit_btn"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button"
                 android:text="@string/submitBtn"
                 android:textColor="@color/white"
                 android:fontFamily="@font/roboto"
                 android:textAllCaps="false"
+                android:layout_weight="3"
                 android:textSize="18sp"
                 android:paddingVertical="15dp"
                 android:layout_marginHorizontal="20dp"
@@ -152,9 +157,10 @@
             <ImageView
                 android:id="@+id/fileBtn"
                 android:padding="12dp"
-                android:layout_width="wrap_content"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_file"
+                android:layout_weight="1"
                 android:background="@drawable/custom_bg_icon"
                 />
 

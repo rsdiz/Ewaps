@@ -7,6 +7,7 @@
 
     <string name="cameraBtn">Ambil gambar</string>
     <string name="submitBtn">Lapor !</string>
+
     <string name="pengaturan">Pengaturan</string>
     <string name="home">Home</string>
 
@@ -15,4 +16,14 @@
         <item>Lapor</item>
         <item>Setting</item>
     </string-array>
+
+    <string name="titikRawanTopic">Titik Rawan</string>
+    <string name="cari_titik_rawan">Cari Titik Rawan</string>
+    <string name="text_input_last_location">Pilih Lokasi Tujuan</string>
+    <string name="text_input_first_location">Pilih Lokasi Awal</string>
+    <string name="text_navigation">Navigasi</string>
+    <string name="text_my_location">Lokasi Saya</string>
+    <string name="text_select_on_map">Pilih di Peta</string>
+    <string name="text_report_location">Laporkan Lokasi!</string>
+
 </resources>

@@ -7,19 +7,18 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import id.gasken.ewaps.databinding.ActivitySplashScreenBinding
 import id.gasken.ewaps.tool.hideSystemUI
+import id.gasken.ewaps.tool.viewBinding
 
 class SplashScreenActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySplashScreenBinding
+    private val binding: ActivitySplashScreenBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         Handler(Looper.getMainLooper()).postDelayed(
             {
-                startActivity(Intent(this, UserInputActivity::class.java))
+                startActivity(Intent(this, ViewMapsActivity::class.java))
                 finish()
             },
             1900

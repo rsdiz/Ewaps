@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.UserInputActivity"
+    android:background="@color/blue"
+    android:id="@+id/drawer_layout">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.ViewMapsActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!--  Layout App Bar  -->
+            <RelativeLayout
+                android:id="@+id/topBar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="0dp"
+                android:background="@color/purple"
+                android:paddingHorizontal="12dp">
+
+                <TextView
+                    android:id="@+id/topic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/titikRawanTopic"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/mapLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/topBar"
+                android:layout_alignParentBottom="true">
+
+                <!--  Maps Fragment  -->
+                <fragment
+                    android:id="@+id/mapview"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context=".ui.ViewMapsActivity" />
+
+            </LinearLayout>
+
+            <!--  Layout Tombol Navigasi Bawah  -->
+            <LinearLayout
+                android:id="@+id/buttonNavigasi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/custom_bg_white_radius"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_navigation" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="@string/text_navigation"
+                    android:textColor="@color/blueText"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <!--  Layout Tombol Laporkan Lokasi  -->
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/buttonNextReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/custom_bg_white_radius"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/speaker" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="@string/text_report_location"
+                    android:textColor="@color/blueText"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/buttonReport"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_margin="12dp"
+                android:layout_below="@id/topBar"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/speaker" />
+
+            <Button
+                android:id="@+id/buttonSelectLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/custom_button_2"
+                android:paddingHorizontal="24dp"
+                android:text="Pilih Lokasi"
+                android:elevation="12dp"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+            <!--  Layout Navigasi  -->
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/layoutNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-30dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:background="@color/purple"
+                android:elevation="10dp"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="30dp"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/navigation_close_btn"
+                        android:text="@string/text_navigation"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/navigation_close_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_baseline_close_24" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:weightSum="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingVertical="12dp"
+                        android:paddingEnd="12dp"
+                        android:src="@drawable/ic_trip_origin_white_24" />
+
+                    <Button
+                        android:id="@+id/inputFirstLoc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/custom_input_rouded"
+                        android:fontFamily="@font/lato"
+                        android:padding="12dp"
+                        android:text="@string/text_input_first_location"
+                        android:textAlignment="textStart"
+                        android:textAllCaps="false"
+                        android:textStyle="normal" />
+
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/radiogroup_firstLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <RadioButton
+                        android:id="@+id/buttonFirst_myloc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/custom_bg_radiobutton"
+                        android:button="@null"
+                        android:drawableStart="@drawable/ic_outline_my_location_gray_24"
+                        android:drawablePadding="8dp"
+                        android:padding="10dp"
+                        android:text="@string/text_my_location"
+                        android:textColor="@color/gray" />
+
+                    <RadioButton
+                        android:id="@+id/buttonFirst_pickOnMap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/custom_bg_radiobutton"
+                        android:button="@null"
+                        android:drawableStart="@drawable/ic_outline_pin_drop_gray_24"
+                        android:drawablePadding="8dp"
+                        android:padding="10dp"
+                        android:text="@string/text_select_on_map"
+                        android:textColor="@color/gray" />
+
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:weightSum="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="0dp"
+                        android:paddingVertical="12dp"
+                        android:paddingEnd="12dp"
+                        android:src="@drawable/ic_place_white_24" />
+
+                    <Button
+                        android:id="@+id/inputLastLoc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/custom_input_rouded"
+                        android:fontFamily="@font/lato"
+                        android:padding="12dp"
+                        android:text="@string/text_input_last_location"
+                        android:textAlignment="textStart"
+                        android:textAllCaps="false"
+                        android:textStyle="normal" />
+
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/radiogroup_lastLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <RadioButton
+                        android:id="@+id/buttonLast_myloc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:background="@drawable/custom_bg_radiobutton"
+                        android:button="@null"
+                        android:drawableStart="@drawable/ic_outline_my_location_gray_24"
+                        android:drawablePadding="8dp"
+                        android:padding="10dp"
+                        android:text="Lokasi Saya"
+                        android:textColor="@color/gray" />
+
+                    <RadioButton
+                        android:id="@+id/buttonLast_pickOnMap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/custom_bg_radiobutton"
+                        android:button="@null"
+                        android:drawableStart="@drawable/ic_outline_pin_drop_gray_24"
+                        android:drawablePadding="8dp"
+                        android:padding="10dp"
+                        android:text="Pilih di Peta"
+                        android:textColor="@color/gray" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:padding="10dp"
+            android:background="@color/white"
+            android:elevation="12dp"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="0dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <ImageView
+                android:id="@+id/imagePoint"
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/titlePoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/lato"
+                    android:text="Lokasi Rawan Kecelakaan"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/notePoint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/lato"
+                    android:text="Keterangan" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/nav_view"
+        app:headerLayout="@layout/drawer_header"
+        app:menu="@menu/main_menu"
+        android:layout_gravity="start"/>
+
+</androidx.drawerlayout.widget.DrawerLayout>
+

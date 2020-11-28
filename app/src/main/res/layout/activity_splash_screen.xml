@@ -13,6 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         app:lottie_autoPlay="true"
+        app:lottie_loop="true"
         app:lottie_fileName="ewaps_animation_2.json"
         />
 
