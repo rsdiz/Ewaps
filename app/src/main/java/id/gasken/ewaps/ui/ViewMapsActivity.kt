@@ -14,6 +14,7 @@ import android.os.* // ktlint-disable no-wildcard-imports
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -22,6 +23,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.maps.* // ktlint-disable no-wildcard-imports
@@ -29,6 +32,7 @@ import com.google.android.gms.maps.model.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.maps.android.clustering.ClusterItem
@@ -41,6 +45,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import maes.tech.intentanim.CustomIntent
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -52,6 +57,7 @@ import java.net.URL
 
 class ViewMapsActivity :
     AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
     private val binding: ActivityViewMapsBinding by viewBinding()
 
@@ -87,6 +93,10 @@ class ViewMapsActivity :
     private var stateBottomSheet = BottomSheetBehavior.STATE_HIDDEN
     private var markerSelected = -1
 
+    // Variable Navigation View
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+
     private val requestSetting = LocationRequest.create().apply {
         fastestInterval = 10000
         interval = 10000
@@ -115,6 +125,12 @@ class ViewMapsActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        drawerLayout = binding.drawerLayout
+        navView = binding.navView
+
+        navView.setNavigationItemSelectedListener(this)
+        navView.menu.getItem(0).isChecked = true
 
         // Fetch data from firebase, then save data result to variable data
         db.collection(Const.DB_POINTS).get()
@@ -911,6 +927,12 @@ class ViewMapsActivity :
             return
         }
 
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+
         super.onBackPressed()
     }
 
@@ -1000,6 +1022,7 @@ class ViewMapsActivity :
                     intent = Intent(this@ViewMapsActivity, UserInputActivity::class.java)
                     intent.putExtra("location", bundle)
                     startActivity(intent)
+                    CustomIntent.customType(this@ViewMapsActivity, "left-to-right")
                 }
             }
         }
@@ -1068,5 +1091,36 @@ class ViewMapsActivity :
                 }
             }
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.nav_home -> {
+            }
+            R.id.nav_feedback -> {
+                startActivity(Intent(this, UserInputActivity::class.java))
+                CustomIntent.customType(this, "left-to-right")
+            }
+            R.id.nav_settings -> {
+                startActivity(Intent(this, SettingActivity::class.java))
+                CustomIntent.customType(this, "left-to-right")
+            }
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START)
+
+        return true
+    }
+
+    override fun onResume() {
+        navView.menu.getItem(0).isChecked = true
+        super.onResume()
+    }
+
+    override fun finish() {
+
+        super.finish()
+        CustomIntent.customType(this, "right-to-left")
     }
 }

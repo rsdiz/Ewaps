@@ -8,21 +8,19 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import id.gasken.ewaps.R
@@ -30,7 +28,9 @@ import id.gasken.ewaps.custom.ImageResizer
 import id.gasken.ewaps.custom.SliderAdapter2
 import id.gasken.ewaps.custom.SliderItemBitmap
 import id.gasken.ewaps.databinding.ActivityUserInputBinding
+import id.gasken.ewaps.tool.Const
 import id.gasken.ewaps.tool.viewBinding
+import maes.tech.intentanim.CustomIntent
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.* // ktlint-disable no-wildcard-imports
@@ -38,11 +38,9 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.abs
 
-class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
+class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private val binding: ActivityUserInputBinding by viewBinding()
-
-    private lateinit var mMap: GoogleMap
 
     private val firestore = FirebaseFirestore.getInstance()
 
@@ -56,8 +54,20 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 
     private var filePathList = ArrayList<Uri>()
 
+    private lateinit var drawerLayout: DrawerLayout
+
+    private lateinit var navView: NavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        drawerLayout = binding.drawerLayout
+
+        navView = binding.navView
+
+        navView.setNavigationItemSelectedListener(this)
+
+        navView.menu.getItem(1).isChecked = true
 
         binding.cameraBtn.setOnClickListener {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -89,26 +99,36 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         }
 
         binding.submitBtn.setOnClickListener {
-            if (binding.infoId.text.toString() == "") {
-                Toast.makeText(this, "keterangan kosong", Toast.LENGTH_SHORT).show()
-            } else {
-                addReportData()
-            }
+            addReportData()
         }
 
-        val mapFragment = (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment)
+        if (intent.extras != null) {
+            val bundle = intent.getBundleExtra("location")
+            val latitude = bundle?.getDouble(Const.LATITUDE)!!
+            val longitude = bundle.getDouble(Const.LONGITUDE)
 
-        mapFragment.getMapAsync(this)
+            reportData[Const.POSITION] = GeoPoint(latitude, longitude)
+        }
     }
-
     private fun addReportData() {
+
+        if (binding.infoId.text.toString() == "") {
+            Toast.makeText(this, "Masukkan keterangan", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (sliderItems.size == 0) {
+            Toast.makeText(this, "Ambil gambar", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Uploading...")
         progressDialog.show()
         uploadImage()
 
-        reportData["description"] = binding.submitBtn.text.toString()
+        reportData[Const.NOTE] = binding.infoId.text.toString()
+        reportData[Const.LASTUPDATE] = Const.currentTimestamp
 
         firestore.collection("report")
             .add(reportData)
@@ -117,6 +137,7 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 Toast.makeText(this, "berhasil upload", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
+                progressDialog.dismiss()
                 Toast.makeText(this, "gagal upload", Toast.LENGTH_SHORT).show()
             }
     }
@@ -129,27 +150,40 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
     }
 
     private fun showImage() {
-        val viewPager2 = binding.viewPagerImageSlider
-        viewPager2.adapter = SliderAdapter2(sliderItems, viewPager2)
-        viewPager2.clipToPadding = false
-        viewPager2.clipChildren = false
-        viewPager2.offscreenPageLimit = 3
-        viewPager2.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
-        val compositePageTransformer = CompositePageTransformer()
-        compositePageTransformer.addTransformer(MarginPageTransformer(40))
-//
-        compositePageTransformer.addTransformer { page, position ->
-            val r = 1 - abs(position)
-            page.scaleY = 0.85f + r * 0.15f
+        if (sliderItems.size > 0) {
+            binding.noImageLayout.visibility = View.INVISIBLE
+            binding.imgLayout.visibility = View.VISIBLE
+
+            val viewPager2 = binding.viewPagerImageSlider
+
+            viewPager2.adapter = SliderAdapter2(sliderItems, viewPager2)
+
+            viewPager2.clipToPadding = false
+            viewPager2.clipChildren = false
+            viewPager2.offscreenPageLimit = 3
+            viewPager2.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+            val compositePageTransformer = CompositePageTransformer()
+            compositePageTransformer.addTransformer(MarginPageTransformer(40))
+
+            compositePageTransformer.addTransformer { page, position ->
+                val r = 1 - abs(position)
+                page.scaleY = 0.85f + r * 0.15f
+            }
+
+            viewPager2.setPageTransformer(compositePageTransformer)
+        } else {
+            binding.imgLayout.visibility = View.INVISIBLE
+            binding.noImageLayout.visibility = View.VISIBLE
         }
-
-        viewPager2.setPageTransformer(compositePageTransformer)
     }
 
     private fun uploadImage() {
+
         uidString = UUID.randomUUID().toString()
-        reportData["imagePath"] = "'images/$uidString'"
+
+        reportData[Const.IMAGEPATH] = "images/$uidString"
 
         for ((index, value) in filePathList.withIndex()) {
             val ref: StorageReference = mStorageRef.child("images/$uidString/$index")
@@ -162,33 +196,24 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
         }
     }
 
-    override fun onMarkerDragStart(p0: Marker?) {
-    }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
 
-    override fun onMarkerDrag(p0: Marker?) {
-    }
-
-    override fun onMarkerDragEnd(marker: Marker?) {
-        if (marker != null) {
-            reportData["location"] = marker.position
+        when (item.itemId) {
+            R.id.nav_home -> {
+                startActivity(Intent(this, ViewMapsActivity::class.java))
+                CustomIntent.customType(this, "left-to-right")
+            }
+            R.id.nav_feedback -> {
+            }
+            R.id.nav_settings -> {
+                startActivity(Intent(this, SettingActivity::class.java))
+                CustomIntent.customType(this, "left-to-right")
+            }
         }
-    }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        drawerLayout.closeDrawer(GravityCompat.START)
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-
-        val marker = mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney").draggable(true))
-
-        mMap.setMinZoomPreference(15.0F)
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-
-        onMarkerDragEnd(marker)
-
-        mMap.setOnMarkerDragListener(this)
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -202,6 +227,7 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
 //                        val bitmap: Bitmap =
 //                            MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
                         addImage(bitmap)
+                        showImage()
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
@@ -241,5 +267,25 @@ class UserInputActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragL
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onResume() {
+        navView.menu.getItem(1).isChecked = true
+        super.onResume()
+    }
+
+    override fun finish() {
+
+        super.finish()
+        CustomIntent.customType(this, "right-to-left")
     }
 }
