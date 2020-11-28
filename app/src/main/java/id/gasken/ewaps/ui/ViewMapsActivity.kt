@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.* // ktlint-disable no-wildcard-imports
 import android.provider.Settings
 import android.util.Log
@@ -128,10 +129,23 @@ class ViewMapsActivity :
                     point.imagePath = document.getString(Const.IMAGEPATH)!!
                     data.add(point)
                 }
+            }
+            .addOnFailureListener {
+                Log.e(tag, "Error occurred, cause ${it.message}")
+            }
 
-                val mapFragment =
-                    supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
-                mapFragment.getMapAsync(this)
+        db.collection(Const.DB_REPORT).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val point = Points()
+                    point.title = "Lokasi Rawan"
+                    point.position = document.getGeoPoint(Const.POSITION)
+                        ?.let { LatLng(it.latitude, it.longitude) }!!
+                    point.note = document.getString(Const.NOTE)!!
+                    point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
+                    point.imagePath = document.getString(Const.IMAGEPATH)!!
+                    data.add(point)
+                }
             }
             .addOnFailureListener {
                 Log.e(tag, "Error occurred, cause ${it.message}")
@@ -154,6 +168,7 @@ class ViewMapsActivity :
 
         binding.buttonNavigasi.setOnClickListener {
             showNavigation(true)
+            showButtonAcceleration(true)
             try {
                 mFusedLocationProviderClient.flushLocations()
             } catch (e: Exception) {
@@ -164,6 +179,7 @@ class ViewMapsActivity :
 
         binding.navigationCloseBtn.setOnClickListener {
             showNavigation(false)
+            showButtonAcceleration(false)
             resetNavigationForm()
             clearMaps()
             onMapReady(mMap)
@@ -206,9 +222,48 @@ class ViewMapsActivity :
         binding.buttonReport.setOnClickListener {
             isUserSetReportLocation = true
             setTopic("Laporkan Titik Rawan")
+            showButtonEmergencyCall(false)
             showButtonReport(false)
             showButtonNextReport(true)
             pickReportLocationOnMap()
+        }
+
+        binding.buttonEmergencyCall.setOnClickListener {
+            intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "112"))
+            startActivity(intent)
+        }
+
+        binding.buttonSearch.setOnClickListener {
+            if (it.tag == "search") {
+                it.tag = "close"
+                binding.buttonSearch.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_close_24))
+                binding.layoutSearch.visibility = View.VISIBLE
+                binding.layoutSearch.startAnimation(animationSlideDownFromHidden)
+            } else {
+                it.tag = "search"
+                binding.buttonSearch.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_search_gray))
+                binding.layoutSearch.startAnimation(animationSlideUpToHidden)
+                binding.layoutSearch.postDelayed(
+                    {
+                        binding.layoutSearch.visibility = View.GONE
+                    },
+                    delayAnimSlide
+                )
+            }
+        }
+
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    private fun showButtonAcceleration(state: Boolean) {
+        if (state) {
+            binding.buttonSpeedMeter.visibility = View.VISIBLE
+            binding.buttonSpeedMeter.startAnimation(animationSlideUpFromHidden)
+        } else {
+            binding.buttonSpeedMeter.startAnimation(animationSlideDownToHidden)
+            binding.buttonSpeedMeter.visibility = View.GONE
         }
     }
 
@@ -307,8 +362,6 @@ class ViewMapsActivity :
                 },
                 delayAnimSlide
             )
-            showButtonNavigation(!state)
-            showButtonReport(!state)
             binding.topBar.visibility = View.INVISIBLE
         } else {
             binding.layoutNavigation.startAnimation(animationSlideUpToHidden)
@@ -321,10 +374,11 @@ class ViewMapsActivity :
                 },
                 delayAnimSlide
             )
-            showButtonNavigation(!state)
-            showButtonReport(!state)
             binding.topBar.visibility = View.VISIBLE
         }
+        showButtonNavigation(!state)
+        showButtonEmergencyCall(!state)
+        showButtonReport(!state)
     }
 
     private fun showButtonNavigation(state: Boolean) {
@@ -336,6 +390,21 @@ class ViewMapsActivity :
             Handler(Looper.getMainLooper()).postDelayed(
                 {
                     binding.buttonNavigasi.visibility = View.GONE
+                },
+                delayAnimSlide
+            )
+        }
+    }
+
+    private fun showButtonEmergencyCall(state: Boolean) {
+        if (state) {
+            binding.buttonEmergencyCall.visibility = View.VISIBLE
+            binding.buttonEmergencyCall.startAnimation(animationSlideLeftFromHidden)
+        } else {
+            binding.buttonEmergencyCall.startAnimation(animationSlideRightToHidden)
+            Handler(Looper.getMainLooper()).postDelayed(
+                {
+                    binding.buttonEmergencyCall.visibility = View.GONE
                 },
                 delayAnimSlide
             )
@@ -361,6 +430,7 @@ class ViewMapsActivity :
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
             try {
+                showButtonAcceleration(false)
                 activeLocation = locationId
                 if (mLocationPermissionGranted) {
                     val locationResult: Task<Location> = mFusedLocationProviderClient.lastLocation
@@ -615,6 +685,7 @@ class ViewMapsActivity :
     }
 
     private fun pickLocationOnMap(selectLocation: Int) {
+        showButtonAcceleration(false)
         activeLocation = selectLocation
 
         when (activeLocation) {
@@ -827,6 +898,7 @@ class ViewMapsActivity :
             isUserSetReportLocation = false
             setTopic()
             showButtonReport(true)
+            showButtonEmergencyCall(true)
             showButtonNextReport(false)
             showButtonNavigation(true)
             clearMaps()
@@ -867,7 +939,6 @@ class ViewMapsActivity :
             binding.buttonSelectLocation.let { button ->
                 button.visibility = View.VISIBLE
                 button.startAnimation(animationSlideUpFromHidden)
-//                button.postDelayed({ button.visibility = View.VISIBLE }, delayAnimSlide)
                 button.setOnClickListener {
                     button.startAnimation(animationFadeOut)
                     button.postDelayed(
@@ -935,7 +1006,7 @@ class ViewMapsActivity :
     }
 
     inner class MarkerAction : GoogleMap.OnMarkerClickListener {
-        val storageRef = storage.reference
+        private val storageRef = storage.reference
 
         override fun onMarkerClick(marker: Marker): Boolean {
             run(marker)
