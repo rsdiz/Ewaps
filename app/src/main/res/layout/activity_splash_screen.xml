@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_fileName="ewaps_animation_2.json"
+        app:lottie_rawRes="@raw/ewaps_animation_2"
         />
 
     <com.airbnb.lottie.LottieAnimationView
@@ -25,7 +25,7 @@
         android:layout_centerVertical="true"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_fileName="paper_airplane.json"
+        app:lottie_rawRes="@raw/paper_airplane"
         android:layout_below="@id/ewapsAnimation"
         />
 

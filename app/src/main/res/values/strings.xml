@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Ewaps</string>
 
-    <string name="inputTopic">Laporkan isi hatimu</string>
+    <string name="inputTopic">Laporkan Lokasi</string>
 
     <string name="hintInfo">Keterangan</string>
 
