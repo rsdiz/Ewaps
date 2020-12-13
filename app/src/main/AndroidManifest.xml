@@ -8,9 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera2" android:required="true"/>
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_ewaps_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.VideoPreviewActivity"></activity>
         <activity
             android:name=".ui.SettingActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -28,7 +29,7 @@
         <activity
             android:name=".ui.UserInputActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.SplashScreenActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -39,13 +40,13 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".job.SpeedMeterJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".job.SpeedMeterJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
-
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

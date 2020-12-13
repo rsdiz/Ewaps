@@ -12,5 +12,6 @@ data class Points(
     var position: LatLng = LatLng(0.0, 0.0),
     var note: String = "",
     var imagePath: String = "",
+    var videoPath: String = "",
     var lastUpdate: Timestamp = Const.currentTimestamp
 ) : Parcelable

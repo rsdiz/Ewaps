@@ -437,6 +437,13 @@
                     android:fontFamily="@font/lato"
                     android:text="Keterangan" />
 
+                <Button
+                    android:id="@+id/playVideoBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Putar video"
+                    android:textAllCaps="true"/>
+
             </LinearLayout>
 
         </LinearLayout>

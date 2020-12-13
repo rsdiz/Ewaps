@@ -125,16 +125,27 @@
             android:paddingHorizontal="20dp"
             android:background="@drawable/custom_bottom_nav"
             android:elevation="20dp"
-            android:weightSum="5"
+            android:weightSum="6"
             >
 
             <ImageView
                 android:id="@+id/camera_btn"
-                android:layout_width="90dp"
+                android:layout_width="115dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_camera"
                 android:layout_weight="1"
                 android:padding="12dp"
+                android:background="@drawable/custom_bg_icon"
+                />
+
+            <ImageView
+                android:id="@+id/videocam_btn"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_videocam"
+                android:layout_weight="1"
+                android:padding="12dp"
+                android:layout_marginLeft="20dp"
                 android:background="@drawable/custom_bg_icon"
                 />
 
@@ -157,7 +168,7 @@
             <ImageView
                 android:id="@+id/fileBtn"
                 android:padding="12dp"
-                android:layout_width="90dp"
+                android:layout_width="115dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_file"
                 android:layout_weight="1"

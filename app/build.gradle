@@ -64,9 +64,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     // Rounded Image view
     implementation "com.makeramen:roundedimageview:2.3.0"
-
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
-
     implementation "com.github.hajiyevelnur92:intentanimation:1.0"
 
     // Firebase

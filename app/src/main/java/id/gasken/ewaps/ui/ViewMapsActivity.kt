@@ -54,6 +54,9 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.* // ktlint-disable no-wildcard-imports
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class ViewMapsActivity :
     AppCompatActivity(),
@@ -65,7 +68,7 @@ class ViewMapsActivity :
     private val db = FirebaseFirestore.getInstance()
 
     // Create a storage reference from our app
-    val storage = FirebaseStorage.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val data: MutableList<Points> = mutableListOf()
     private lateinit var clusterManager: ClusterManager<PointItem>
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -156,6 +159,7 @@ class ViewMapsActivity :
                             point.note = document.getString(Const.NOTE)!!
                             point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
                             point.imagePath = document.getString(Const.IMAGEPATH)!!
+                            point.videoPath = document.getString(Const.VIDEOPATH)!!
                             data.add(point)
                         }
 
@@ -170,7 +174,6 @@ class ViewMapsActivity :
             .addOnFailureListener {
                 Log.e(tag, "Error occurred, cause ${it.message}")
             }
-
 
         val bottomSheet: LinearLayout = binding.layoutBottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -271,6 +274,10 @@ class ViewMapsActivity :
                     delayAnimSlide
                 )
             }
+        }
+
+        binding.playVideoBtn.setOnClickListener {
+            playVideo()
         }
     }
 
@@ -812,6 +819,25 @@ class ViewMapsActivity :
                 binding.buttonLastPickOnMap.isChecked = false
             }
         }
+    }
+
+    /**
+     * on click play video button
+     *
+     * @param id from playVideo
+     */
+    @SuppressLint("ShowToast")
+    private fun playVideo() {
+
+        if (data[markerSelected].videoPath == "") {
+            Toast.makeText(this, "Video tidak tersedia", Toast.LENGTH_SHORT)
+            return
+        }
+
+        val intent = Intent(this, VideoPreviewActivity::class.java)
+        intent.putExtra("online", true)
+        intent.putExtra(Const.VIDEOPATH, data[markerSelected].videoPath)
+        startActivity(intent)
     }
 
     /**

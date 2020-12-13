@@ -8,11 +8,9 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import id.gasken.ewaps.data.AccelerometerData
-import id.gasken.ewaps.databinding.ActivitySettingBinding
-import id.gasken.ewaps.ui.SettingActivity
+import id.gasken.ewaps.data.Accelerometer
 
-class SpeedMeterJobService: JobService() {
+class SpeedMeterJobService : JobService() {
 
     private val TAG = "SpeedMeterJobService"
     var jobCancelled = false
@@ -43,11 +41,11 @@ class SpeedMeterJobService: JobService() {
                     if (jobCancelled) {
                         return
                     }
-                    AccelerometerData.X_AXIS = event!!.values[0]
-                    AccelerometerData.Y_AXIS = event.values[1]
-                    AccelerometerData.Z_AXIS = event.values[2]
+                    Accelerometer.X_AXIS = event!!.values[0]
+                    Accelerometer.Y_AXIS = event.values[1]
+                    Accelerometer.Z_AXIS = event.values[2]
 
-                    Log.d(TAG, "Accelerometer X: ${event.values[0]}, Y: ${event.values[1]}, Z: ${event.values[2]}, state: $jobCancelled")
+//                    Log.d(TAG, "Accelerometer X: ${event.values[0]}, Y: ${event.values[1]}, Z: ${event.values[2]}, state: $jobCancelled")
                 }
 
                 override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {

@@ -1,5 +1,6 @@
 package id.gasken.ewaps.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -58,6 +59,9 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
     private lateinit var navView: NavigationView
 
+    private var videoUri: Uri? = null
+
+    @SuppressLint("QueryPermissionsNeeded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -102,6 +106,23 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             addReportData()
         }
 
+        binding.videocamBtn.setOnClickListener {
+
+            if (videoUri != null) {
+                val intent = Intent(this, VideoPreviewActivity::class.java)
+                intent.putExtra("videoUri", videoUri)
+                intent.putExtra("online", false)
+                startActivity(intent)
+                binding.videocamBtn.setImageResource(R.drawable.ic_videocam)
+            } else {
+                val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivityForResult(intent, 2)
+                    binding.videocamBtn.setImageResource(R.drawable.ic_playvideo)
+                }
+            }
+        }
+
         if (intent.extras != null) {
             val bundle = intent.getBundleExtra("location")
             val latitude = bundle?.getDouble(Const.LATITUDE)!!
@@ -126,6 +147,7 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         progressDialog.setTitle("Uploading...")
         progressDialog.show()
         uploadImage()
+        uploadVideo()
 
         reportData[Const.NOTE] = binding.infoId.text.toString()
         reportData[Const.LASTUPDATE] = Const.currentTimestamp
@@ -179,6 +201,24 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         }
     }
 
+    private fun uploadVideo() {
+        uidString = UUID.randomUUID().toString()
+
+        reportData[Const.VIDEOPATH] = "video/$uidString"
+
+        val ref: StorageReference = mStorageRef.child("video/$uidString/0")
+
+        videoUri?.let {
+            ref.putFile(it)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "berhasil upload video", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "gagal upload video", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
     private fun uploadImage() {
 
         uidString = UUID.randomUUID().toString()
@@ -190,8 +230,10 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
             ref.putFile(value)
                 .addOnSuccessListener {
+                    Toast.makeText(this, "berhasil upload gambar", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener {
+                    Toast.makeText(this, "gagal upload gambar", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -261,6 +303,16 @@ class UserInputActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                             }
                         }
                         showImage()
+                    }
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            2 -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        videoUri = data.data
                     }
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()

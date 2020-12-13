@@ -12,6 +12,7 @@ object Const {
     val IMAGEPATH = "imagePath"
     val LATITUDE = "latitude"
     val LONGITUDE = "longitude"
+    val VIDEOPATH = "videoPath"
 
     val currentTimestamp: Timestamp
         get() = Timestamp.now()
