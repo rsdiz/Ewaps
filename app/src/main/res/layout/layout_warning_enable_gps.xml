@@ -81,7 +81,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="@raw/error_or_explanation_alert"
+        app:lottie_fileName="error_or_explanation_alert.json"
         app:lottie_loop="true"
         app:lottie_repeatCount="3"
         app:lottie_repeatMode="restart"

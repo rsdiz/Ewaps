@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
@@ -56,7 +57,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.* // ktlint-disable no-wildcard-imports
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class ViewMapsActivity :
     AppCompatActivity(),
@@ -95,10 +95,13 @@ class ViewMapsActivity :
     private var isNavigationShow = false
     private var stateBottomSheet = BottomSheetBehavior.STATE_HIDDEN
     private var markerSelected = -1
+    private var isGpsLocked = false
 
-    // Variable Navigation View
+    // Variable for Navigation View
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
+
+    private var addresses: MutableList<android.location.Address> = arrayListOf()
 
     private val requestSetting = LocationRequest.create().apply {
         fastestInterval = 10000
@@ -134,6 +137,10 @@ class ViewMapsActivity :
 
         navView.setNavigationItemSelectedListener(this)
         navView.menu.getItem(0).isChecked = true
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        getLocation()
 
         // Fetch data from firebase, then save data result to variable data
         db.collection(Const.DB_POINTS).get()
@@ -281,6 +288,38 @@ class ViewMapsActivity :
         }
     }
 
+    private fun getLocation() {
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            return
+        }
+        mFusedLocationProviderClient.lastLocation
+            .addOnCompleteListener {
+
+                if (it.result != null) {
+                    mLastKnownLocation = it.result
+
+                    val geocoder = Geocoder(this, Locale.getDefault())
+
+                    addresses = geocoder.getFromLocation(
+                        mLastKnownLocation.latitude, mLastKnownLocation.longitude, 1
+                    )
+
+                    isGpsLocked = true
+                } else {
+                    showWarningGPS()
+                }
+            }
+            .addOnFailureListener {
+                Log.d("ViewMapsActivity", "===================== ERROR GPS")
+            }
+    }
+
     private fun showButtonAcceleration(state: Boolean) {
         if (state) {
             binding.buttonSpeedMeter.visibility = View.VISIBLE
@@ -322,19 +361,42 @@ class ViewMapsActivity :
 
     private fun pickReportLocationOnMap() {
         showButtonNavigation(false)
-        val marker = mMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(-7.797068, 110.370529))
-                .title("Lokasi yang ingin dilaporkan")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag_marker", 100, 100)))
-        )
-        mMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(-7.797068, 110.370529),
-                12F
+
+        val marker: Marker
+
+        if (isGpsLocked) {
+
+            val latLng = LatLng(addresses[0].latitude, addresses[0].longitude)
+
+            marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("Lokasi yang ingin dilaporkan")
+                    .draggable(true)
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag_marker", 100, 100)))
             )
-        )
+            mMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    latLng,
+                    12F
+                )
+            )
+        } else {
+            marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(-7.797068, 110.370529))
+                    .title("Lokasi yang ingin dilaporkan")
+                    .draggable(true)
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag_marker", 100, 100)))
+            )
+            mMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(-7.797068, 110.370529),
+                    12F
+                )
+            )
+        }
+
         mMap.setOnMarkerDragListener(PickReportLocation())
         PickReportLocation().onMarkerDragEnd(marker)
     }
@@ -349,7 +411,15 @@ class ViewMapsActivity :
     }
 
     private fun setupCluster(points: MutableList<Points>) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-7.797068, 110.370529), 15f))
+
+        Log.d("ViewMapsActivity", "===================== isGpsLocked: $isGpsLocked")
+
+        if (isGpsLocked) {
+            val latLng = LatLng(addresses[0].latitude, addresses[0].longitude)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        } else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-7.797068, 110.370529), 15f))
+        }
 
         clusterManager = ClusterManager(this, mMap)
         addPoints(points)
@@ -1142,6 +1212,7 @@ class ViewMapsActivity :
 
     override fun onResume() {
         navView.menu.getItem(0).isChecked = true
+        getLocation()
         super.onResume()
     }
 

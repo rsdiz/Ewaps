@@ -6,16 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".ui.SplashScreenActivity">
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/ewapsAnimation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/ewaps_animation_2"
-        />
+<!--    <com.airbnb.lottie.LottieAnimationView-->
+<!--        android:id="@+id/ewapsAnimation"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        app:lottie_fileName="error_or_explanation_alert.json"-->
+<!--        app:lottie_autoPlay="true"-->
+<!--        app:lottie_loop="true"-->
+<!--        />-->
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/paperPlaneAnimation"
@@ -25,8 +25,7 @@
         android:layout_centerVertical="true"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/paper_airplane"
-        android:layout_below="@id/ewapsAnimation"
+        app:lottie_fileName="paper_airplane.json"
         />
 
 </RelativeLayout>
