@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".ui.SplashScreenActivity">
 
-<!--    <com.airbnb.lottie.LottieAnimationView-->
-<!--        android:id="@+id/ewapsAnimation"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        app:lottie_fileName="error_or_explanation_alert.json"-->
-<!--        app:lottie_autoPlay="true"-->
-<!--        app:lottie_loop="true"-->
-<!--        />-->
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="Logo Ewaps"
+        android:src="@drawable/ewaps_white_bg" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/paperPlaneAnimation"
-        android:layout_width="match_parent"
+        android:id="@+id/lottieLoading"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        app:lottie_fileName="logo_animation.json"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_fileName="paper_airplane.json"
-        />
+        app:lottie_loop="false" />
 
-</RelativeLayout>
+</LinearLayout>

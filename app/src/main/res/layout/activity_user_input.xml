@@ -5,9 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.UserInputActivity"
-
     android:background="@color/blue"
-
     android:id="@+id/drawer_layout">
 
     <RelativeLayout
@@ -17,10 +15,8 @@
         <RelativeLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             android:background="@color/purple"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="20dp"
             >
 
             <TextView
@@ -29,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
                 android:fontFamily="@font/roboto"
                 android:text="@string/inputTopic"
                 android:textColor="@color/white"
@@ -83,7 +80,6 @@
                     android:layout_width="match_parent"
                     android:paddingTop="20dp"
                     android:paddingHorizontal="40dp"
-
                     >
 
                 </androidx.viewpager2.widget.ViewPager2>
@@ -180,11 +176,13 @@
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/nav_view"
+        android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/main_menu"
-        android:layout_gravity="start"/>
+        app:itemIconTint="@drawable/custom_bg_menuitem_tint"
+        app:itemTextColor="@drawable/custom_bg_menuitem_tint"
+        app:menu="@menu/main_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import id.gasken.ewaps.R
 import id.gasken.ewaps.databinding.ActivitySplashScreenBinding
 import id.gasken.ewaps.tool.hideSystemUI
 import id.gasken.ewaps.tool.viewBinding
 
-class SplashScreenActivity : AppCompatActivity() {
+class SplashScreenActivity : AppCompatActivity(R.layout.activity_splash_screen) {
 
     private val binding: ActivitySplashScreenBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(binding.root)
 
         Handler(Looper.getMainLooper()).postDelayed(
             {

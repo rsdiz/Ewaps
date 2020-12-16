@@ -28,11 +28,20 @@
             android:background="@color/purple"
             android:paddingHorizontal="12dp">
 
+            <ImageView
+                android:id="@+id/iconMenu"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_baseline_menu_24" />
+
             <TextView
                 android:id="@+id/topic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/iconMenu"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/roboto"
                 android:text="@string/titikRawanTopic"
@@ -202,14 +211,15 @@
             android:src="@drawable/speaker" />
 
         <!--  Tombol Emergency Call  -->
-        <ImageView
-            android:id="@+id/buttonEmergencyCall"
-            android:layout_width="54dp"
-            android:layout_height="54dp"
-            android:layout_below="@id/buttonReport"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/phone_call_red" />
+            <ImageView
+                android:id="@+id/buttonEmergencyCall"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="140dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/phone_call_red" />
 
         <Button
             android:id="@+id/buttonSelectLocation"
@@ -451,11 +461,13 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/nav_view"
+        android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/main_menu"
-        android:layout_gravity="start"/>
+        app:itemIconTint="@drawable/custom_bg_menuitem_tint"
+        app:itemTextColor="@drawable/custom_bg_menuitem_tint"
+        app:menu="@menu/main_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

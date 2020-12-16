@@ -208,6 +208,14 @@ class ViewMapsActivity :
             clearMaps()
         }
 
+        binding.iconMenu.setOnClickListener {
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
+
         binding.navigationCloseBtn.setOnClickListener {
             showNavigation(false)
             showButtonAcceleration(false)
@@ -1026,8 +1034,7 @@ class ViewMapsActivity :
 
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
+            return
         }
 
         super.onBackPressed()
