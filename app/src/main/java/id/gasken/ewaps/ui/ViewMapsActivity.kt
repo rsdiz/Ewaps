@@ -140,48 +140,21 @@ class ViewMapsActivity :
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-        getLocation()
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-        // Fetch data from firebase, then save data result to variable data
-        db.collection(Const.DB_POINTS).get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val point = Points()
-                    point.title = document.getString(Const.TITLE)!!
-                    point.position = document.getGeoPoint(Const.POSITION)
-                        ?.let { LatLng(it.latitude, it.longitude) }!!
-                    point.note = document.getString(Const.NOTE)!!
-                    point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
-                    point.imagePath = document.getString(Const.IMAGEPATH)!!
-                    data.add(point)
-                }
+        if (savedInstanceState == null) {
+            getLocation()
+        }
 
-                db.collection(Const.DB_REPORT).get()
-                    .addOnSuccessListener { result2 ->
-                        for (document in result2) {
-                            val point = Points()
-                            point.title = "Lokasi Rawan"
-                            point.position = document.getGeoPoint(Const.POSITION)
-                                ?.let { LatLng(it.latitude, it.longitude) }!!
-                            point.note = document.getString(Const.NOTE)!!
-                            point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
-                            point.imagePath = document.getString(Const.IMAGEPATH)!!
-                            point.videoPath = document.getString(Const.VIDEOPATH)!!
-                            data.add(point)
-                        }
+        fetchDataFromDB()
 
-                        val mapFragment =
-                            supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
-                        mapFragment.getMapAsync(this)
-                    }
-                    .addOnFailureListener {
-                        Log.e(tag, "Error occurred, cause ${it.message}")
-                    }
-            }
-            .addOnFailureListener {
-                Log.e(tag, "Error occurred, cause ${it.message}")
-            }
+        setBindingAction()
+    }
 
+    /**
+     * Set Everything on layout has action
+     */
+    private fun setBindingAction() {
         val bottomSheet: LinearLayout = binding.layoutBottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
 
@@ -194,8 +167,6 @@ class ViewMapsActivity :
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {}
             }
         )
-
-        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         binding.buttonNavigasi.setOnClickListener {
             showNavigation(true)
@@ -268,7 +239,7 @@ class ViewMapsActivity :
         }
 
         binding.buttonEmergencyCall.setOnClickListener {
-            intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "112"))
+            intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "0274368238"))
             startActivity(intent)
         }
 
@@ -296,6 +267,50 @@ class ViewMapsActivity :
         }
     }
 
+    /**
+     * Fetch data from firebase, then save data result to variable data
+     */
+    private fun fetchDataFromDB() {
+        db.collection(Const.DB_POINTS).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val point = Points()
+                    point.title = document.getString(Const.TITLE)!!
+                    point.position = document.getGeoPoint(Const.POSITION)
+                        ?.let { LatLng(it.latitude, it.longitude) }!!
+                    point.note = document.getString(Const.NOTE)!!
+                    point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
+                    point.imagePath = document.getString(Const.IMAGEPATH) ?: ""
+                    data.add(point)
+                }
+
+                db.collection(Const.DB_REPORT).get()
+                    .addOnSuccessListener { result2 ->
+                        for (document in result2) {
+                            val point = Points()
+                            point.title = "Lokasi Rawan"
+                            point.position = document.getGeoPoint(Const.POSITION)
+                                ?.let { LatLng(it.latitude, it.longitude) }!!
+                            point.note = document.getString(Const.NOTE)!!
+                            point.lastUpdate = document.getTimestamp(Const.LASTUPDATE)!!
+                            point.imagePath = document.getString(Const.IMAGEPATH) ?: ""
+                            point.videoPath = document.getString(Const.VIDEOPATH) ?: ""
+                            data.add(point)
+                        }
+
+                        val mapFragment =
+                            supportFragmentManager.findFragmentById(R.id.mapview) as SupportMapFragment
+                        mapFragment.getMapAsync(this)
+                    }
+                    .addOnFailureListener {
+                        Log.e(tag, "Error occurred, cause ${it.message}")
+                    }
+            }
+            .addOnFailureListener {
+                Log.e(tag, "Error occurred, cause ${it.message}")
+            }
+    }
+
     private fun getLocation() {
 
         if (ActivityCompat.checkSelfPermission(
@@ -303,7 +318,11 @@ class ViewMapsActivity :
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                44
+            )
             return
         }
         mFusedLocationProviderClient.lastLocation
@@ -850,6 +869,7 @@ class ViewMapsActivity :
         val builder = AlertDialog.Builder(this, R.style.ThemeOverlay_AppCompat_Dialog_Alert)
             .setView(layoutDialog)
         val alertDialog = builder.show()
+        alertDialog.setCanceledOnTouchOutside(false)
         layoutDialog.findViewById<Button>(R.id.buttonKembali).setOnClickListener {
             alertDialog.dismiss()
         }
@@ -901,14 +921,11 @@ class ViewMapsActivity :
 
     /**
      * on click play video button
-     *
-     * @param id from playVideo
      */
-    @SuppressLint("ShowToast")
     private fun playVideo() {
 
         if (data[markerSelected].videoPath == "") {
-            Toast.makeText(this, "Video tidak tersedia", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "Video tidak tersedia", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -1125,8 +1142,8 @@ class ViewMapsActivity :
                     bundle.putDouble(Const.LONGITUDE, marker.position.longitude)
                     intent = Intent(this@ViewMapsActivity, UserInputActivity::class.java)
                     intent.putExtra("location", bundle)
-                    startActivity(intent)
                     CustomIntent.customType(this@ViewMapsActivity, "left-to-right")
+                    startActivity(intent)
                 }
             }
         }
@@ -1150,21 +1167,28 @@ class ViewMapsActivity :
                     i++
                 }
             }
-            Log.d("STATE", stateBottomSheet.toString())
-            Log.d("MARKER", markerSelected.toString())
 
             when (stateBottomSheet) {
                 BottomSheetBehavior.STATE_HIDDEN, BottomSheetBehavior.STATE_COLLAPSED -> {
 
                     try {
-                        findViewById<ImageView>(R.id.imagePoint).apply {
-                            val imageResource =
-                                storageRef.child(data[markerSelected].imagePath).child("0")
-                            GlideApp.with(this@ViewMapsActivity)
-                                .load(imageResource)
-                                .placeholder(R.drawable.flag_marker)
-                                .centerCrop()
-                                .into(this)
+                        if (data[markerSelected].imagePath != "") {
+                            findViewById<ImageView>(R.id.imagePoint).apply {
+                                val imageResource =
+                                    storageRef.child(data[markerSelected].imagePath).child("0")
+                                GlideApp.with(this@ViewMapsActivity)
+                                    .load(imageResource)
+                                    .placeholder(R.drawable.flag_marker)
+                                    .centerCrop()
+                                    .into(this)
+                            }
+                        } else {
+                            findViewById<ImageView>(R.id.imagePoint).apply {
+                                GlideApp.with(this@ViewMapsActivity)
+                                    .load(R.drawable.flag_marker)
+                                    .centerCrop()
+                                    .into(this)
+                            }
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -1174,6 +1198,14 @@ class ViewMapsActivity :
                     }
                     findViewById<TextView>(R.id.notePoint).apply {
                         this.text = data[markerSelected].note
+                    }
+                    findViewById<Button>(R.id.playVideoBtn).apply {
+                        if (data[markerSelected].videoPath != "") {
+                            this.text = "Putar Video"
+                            this.visibility = View.VISIBLE
+                        } else {
+                            this.visibility = View.GONE
+                        }
                     }
 
                     BottomSheetBehavior.STATE_HALF_EXPANDED.let {

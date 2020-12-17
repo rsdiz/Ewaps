@@ -18,7 +18,9 @@
         android:roundIcon="@drawable/custom_bg_icon_2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.VideoPreviewActivity"/>
+        <activity
+            android:name=".ui.VideoPreviewActivity"
+            android:parentActivityName=".ui.ViewMapsActivity" />
         <activity
             android:name=".ui.SettingActivity"
             android:theme="@style/AppTheme.NoActionBar" />
